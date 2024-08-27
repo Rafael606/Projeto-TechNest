@@ -1,0 +1,16 @@
+/* SignIn.css */
+@media (orientation: landscape) and (max-width: 1024px) {
+    .form-container {
+      max-width: 500px; /* Ajuste conforme necessário */
+      padding: 2rem; /* Ajuste conforme necessário */
+    }
+    .left-section {
+      justify-content: flex-start; /* Ajuste a justificação do conteúdo */
+    }
+    .right-section {
+      max-width: 250px; /* Ajuste conforme necessário */
+    }
+  }
+  
+  /* Outras regras CSS */
+  
