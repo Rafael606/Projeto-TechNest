@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import './SignIn.css';
 
+import auth from "../../services/auth";
+
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,18 +41,30 @@ const SignIn = () => {
     if (!password) {
       setErrPassword("Digite sua senha");
       valid = false;
-    } else if (password.length < 6) {
-      setErrPassword("A senha deve ter pelo menos 6 caracteres");
+    } else if (password.length < 3) {
+      setErrPassword("A senha deve ter pelo menos 3 caracteres");
       valid = false;
     }
 
-    if (valid) {
+    // if (valid) {
+    //   setSuccessMsg(
+    //     `Olá, obrigado pela sua tentativa. Estamos processando para validar seu acesso. Até então, fique conectado e assistência adicional será enviada a você por e-mail em ${email}`
+    //   );
+    //   setEmail("");
+    //   setPassword("");
+    // }
+
+    console.log("Dados", email);
+    console.log("Dados", password);
+
+    auth.login(email, password).then(
       setSuccessMsg(
-        `Olá, obrigado pela sua tentativa. Estamos processando para validar seu acesso. Até então, fique conectado e assistência adicional será enviada a você por e-mail em ${email}`
-      );
-      setEmail("");
-      setPassword("");
-    }
+        `deu certo!`
+      )
+    ).catch((e) => {
+      setErrPassword(`deu errado ${e}`);
+    });
+    
   };
 
   return (
