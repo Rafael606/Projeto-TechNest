@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { logoLight } from "../../assets/images";
 import './SignIn.css';
 
@@ -12,6 +13,7 @@ const SignIn = () => {
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -46,23 +48,12 @@ const SignIn = () => {
       valid = false;
     }
 
-    // if (valid) {
-    //   setSuccessMsg(
-    //     `Olá, obrigado pela sua tentativa. Estamos processando para validar seu acesso. Até então, fique conectado e assistência adicional será enviada a você por e-mail em ${email}`
-    //   );
-    //   setEmail("");
-    //   setPassword("");
-    // }
-
-    console.log("Dados", email);
-    console.log("Dados", password);
-
     auth.login(email, password).then(
-      setSuccessMsg(
-        `deu certo!`
-      )
+      setEmail(""),
+      setPassword(""),
+      navigate("/")
     ).catch((e) => {
-      setErrPassword(`deu errado ${e}`);
+      setErrPassword(`Erro ${e.response.data}`);
     });
     
   };

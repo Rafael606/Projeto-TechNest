@@ -3,6 +3,9 @@ import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
+
+import auth from "../../services/auth";
 
 const SignUp = () => {
   const [clientName, setClientName] = useState("");
@@ -24,6 +27,7 @@ const SignUp = () => {
   const [errZip, setErrZip] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleClientName = (e) => {
     setClientName(e.target.value);
@@ -105,18 +109,25 @@ const SignUp = () => {
         alert("Você deve concordar com os termos e condições.");
         return;
       }
-      setSuccessMsg(
-        `Olá, obrigado por se cadastrar! Estamos processando suas informações e você receberá um e-mail de confirmação em ${email}.`
-      );
-      setClientName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-      setAddress("");
-      setCity("");
-      setCountry("");
-      setZip("");
-      setChecked(false);
+
+      auth.register(clientName, email, password).then(
+        setClientName(""),
+        setEmail(""),
+        setPassword(""),
+        navigate("/signin")
+      ).catch((e) => {
+        setErrPassword(`Erro ${e.response.data}`);
+      });
+
+      // setClientName("");
+      // setEmail("");
+      // setPhone("");
+      // setPassword("");
+      // setAddress("");
+      // setCity("");
+      // setCountry("");
+      // setZip("");
+      // setChecked(false);
     }
   };
 
