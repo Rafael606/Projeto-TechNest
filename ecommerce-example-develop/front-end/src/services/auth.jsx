@@ -10,12 +10,12 @@ const login = async (email, password) => {
   }
 };
 
-const register = async (nome, email, password) => {
+const register = async (user) => {
   try {
-    const response = await api.post('auth/register', { nome, email, password });
+    const response = await api.post('auth/register', user);
     return response.data;
   } catch (error) {
-    console.error('Erro ao realizar register:', error);
+    console.error('Erro ao realizar login:', error);
     throw error;
   }
 };

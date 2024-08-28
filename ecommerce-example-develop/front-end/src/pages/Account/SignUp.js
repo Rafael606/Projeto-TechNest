@@ -110,24 +110,37 @@ const SignUp = () => {
         return;
       }
 
-      auth.register(clientName, email, password).then(
-        setClientName(""),
-        setEmail(""),
-        setPassword(""),
-        navigate("/signin")
-      ).catch((e) => {
-        setErrPassword(`Erro ${e.response.data}`);
-      });
+      const user = {
+        nome: clientName,
+        email: email,
+        telefone: phone,
+        password: password,
+        logradouro: address,
+        cidade: city,
+        uf: '',  // Valor opcional
+        pais: country,
+        cep: ''  // Valor opcional
+      };
 
-      // setClientName("");
-      // setEmail("");
-      // setPhone("");
-      // setPassword("");
-      // setAddress("");
-      // setCity("");
-      // setCountry("");
-      // setZip("");
-      // setChecked(false);
+      auth.register(user)
+        .then(() => {
+          navigate("/signin");  // Navega para a página de signin após registro bem-sucedido
+        })
+        .catch((e) => {
+          // Exibe uma mensagem de erro amigável, incluindo fallback
+          const errorMessage = e.response?.data || 'Ocorreu um erro ao tentar registrar.';
+          setErrPassword(`Erro: ${errorMessage}`);
+        });
+
+      setClientName("");
+      setEmail("");
+      setPhone("");
+      setPassword("");
+      setAddress("");
+      setCity("");
+      setCountry("");
+      setZip("");
+      setChecked(false);
     }
   };
 
@@ -282,35 +295,35 @@ const SignUp = () => {
                   )}
                 </div>
 
-               {/* Senha */}
-               <div className="flex flex-col gap-1 relative">
-      <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-        Senha
-      </p>
-      <input
-        onChange={handlePassword}
-        value={password}
-        className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border border-gray-400 pr-10"
-        type={showPassword ? "text" : "password"} 
-        placeholder="Digite sua senha"
-      />
-      <span
-        className="absolute top-1/2 right-2 mt-3 transform -translate-y-1/2 cursor-pointer"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? (
-          <FaEye className="text-gray-600" />
-        ) : (
-          <FaEyeSlash className="text-gray-600" />
-        )}
-      </span>
-      {errPassword && (
-        <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-          <span className="font-bold italic mr-1">!</span>
-          {errPassword}
-        </p>
-      )}
-    </div>
+                {/* Senha */}
+                <div className="flex flex-col gap-1 relative">
+                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                    Senha
+                  </p>
+                  <input
+                    onChange={handlePassword}
+                    value={password}
+                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border border-gray-400 pr-10"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Digite sua senha"
+                  />
+                  <span
+                    className="absolute top-1/2 right-2 mt-3 transform -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <FaEye className="text-gray-600" />
+                    ) : (
+                      <FaEyeSlash className="text-gray-600" />
+                    )}
+                  </span>
+                  {errPassword && (
+                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
+                      <span className="font-bold italic mr-1">!</span>
+                      {errPassword}
+                    </p>
+                  )}
+                </div>
 
                 {/* Endereço */}
                 <div className="flex flex-col gap-1">
