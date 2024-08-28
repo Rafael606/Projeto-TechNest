@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 
 // Rotas
 const authRoutes = require('./routes/authRoutes');
+const enderecos = require('./routes/enderecoesRoutes');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
+app.use('/enderecos', enderecos);
 app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
 

@@ -12,7 +12,13 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'Users', // Nome da tabela 'Users'
+          key: 'id'
+        },
+        onDelete: 'CASCADE', // Exclui endereços se o usuário for excluído
+        onUpdate: 'CASCADE'
       },
       logradouro: {
         type: Sequelize.STRING,
