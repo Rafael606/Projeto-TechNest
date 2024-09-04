@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { Alert, Snackbar } from "@mui/material";  // Importar componentes do Material UI
 import { useNavigate } from 'react-router-dom';
 import { logoLight } from "../../assets/images";
 import './SignIn.css';
@@ -13,6 +14,7 @@ const SignIn = () => {
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [open, setOpen] = useState(false);  // Estado para controlar a exibição do alerta
   const navigate = useNavigate();
 
   const handleEmail = (e) => {
@@ -30,7 +32,7 @@ const SignIn = () => {
 
     let valid = true;
 
-    // Email validation
+    // Validação do email
     if (!email) {
       setErrEmail("Digite seu e-mail");
       valid = false;
@@ -39,7 +41,7 @@ const SignIn = () => {
       valid = false;
     }
 
-    // Password validation
+    // Validação da senha
     if (!password) {
       setErrPassword("Digite sua senha");
       valid = false;
@@ -48,6 +50,12 @@ const SignIn = () => {
       valid = false;
     }
 
+    if (valid) {
+      setSuccessMsg("Login efetuado com sucesso!");
+      setOpen(true);  // Mostrar o alerta
+      setEmail("");
+      setPassword("");
+    }
     auth.login(email, password).then(
       setEmail(""),
       setPassword(""),
@@ -56,6 +64,10 @@ const SignIn = () => {
       setErrPassword(`Erro ${e.response.data}`);
     });
     
+  };
+
+  const handleClose = () => {
+    setOpen(false);  // Fechar o alerta
   };
 
   return (
@@ -208,6 +220,16 @@ const SignIn = () => {
           </form>
         )}
       </div>
+
+      {/* Alerta de Sucesso */}
+      <Snackbar open={open} 
+      autoHideDuration={6000} 
+      onClose={handleClose}
+      anchorOrigin={{ vertical: 'top' , horizontal: 'right' }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          {successMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
