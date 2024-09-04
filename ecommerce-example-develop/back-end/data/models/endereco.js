@@ -24,25 +24,8 @@ module.exports = (sequelize, DataTypes) => {
       cep: {
         type: DataTypes.STRING,
         allowNull: false
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'User',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
       }
     });
-    
-    Endereco.associate = function(models) {
-      Endereco.belongsTo(models.User, {
-        foreignKey: 'userId',
-        onDelete: 'CASCADE'
-      });
-    };
     
     return Endereco;
   };
