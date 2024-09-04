@@ -1,27 +1,48 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../data/models');
+const { User, Endereco, sequelize } = require('../data/models');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
 const register = async (req, res) => {
-    const { nome, email, password } = req.body;
+    const transacaoDB = await sequelize.transaction();
+    try {
+        const { nome, email, telefone, password } = req.body;
+        const { logradouro, cidade, uf, pais, cep } = req.body;
 
-    const user = await User.findOne({ where: { email } });
-    if (user) return res.status(400).send('Já existe um usuário com este e-mail já cadastrado.');
+        const user = await User.findOne({ where: { email } });
+        if (user) return res.status(400).send('Já existe um usuário com este e-mail já cadastrado.');
 
-    //Criptografa a senha
-    const hashedPassword = await bcrypt.hash(password, 10);
+        //Criptografa a senha
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    //Cria novo usuário com senha criptografada
-    const newUser = await User.create({
-        nome,
-        email,
-        password: hashedPassword
-    });
+        //Cria novo usuário com senha criptografada
+        const newUser = await User.create({
+            nome,
+            email,
+            telefone,
+            password: hashedPassword
+        }, {transaction: transacaoDB});
 
-    res.send(newUser);
+        console.log("newUser", newUser);
+
+        const newEndereco = await Endereco.create({
+            logradouro,
+            cidade,
+            uf,
+            pais,
+            cep,
+            userId: newUser.id
+        }, {transaction: transacaoDB});
+
+        await transacaoDB.commit();
+        res.status(201).json({newUser, newEndereco});
+
+    } catch (error){
+        await transacaoDB.rollback();
+        res.status(500).json({ error: `Erro ao cadastrar usuário e endereo. Erro: ${error}`})
+    }
 };
 
 const login = async (req, res) => {

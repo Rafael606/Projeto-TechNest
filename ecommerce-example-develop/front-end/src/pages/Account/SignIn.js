@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { Alert, Snackbar } from "@mui/material";  // Importar componentes do Material UI
+import { useNavigate } from 'react-router-dom';
 import { logoLight } from "../../assets/images";
 import './SignIn.css';
+
+import auth from "../../services/auth";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +15,7 @@ const SignIn = () => {
   const [errPassword, setErrPassword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [open, setOpen] = useState(false);  // Estado para controlar a exibição do alerta
+  const navigate = useNavigate();
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -41,8 +45,8 @@ const SignIn = () => {
     if (!password) {
       setErrPassword("Digite sua senha");
       valid = false;
-    } else if (password.length < 6) {
-      setErrPassword("A senha deve ter pelo menos 6 caracteres");
+    } else if (password.length < 3) {
+      setErrPassword("A senha deve ter pelo menos 3 caracteres");
       valid = false;
     }
 
@@ -52,6 +56,14 @@ const SignIn = () => {
       setEmail("");
       setPassword("");
     }
+    auth.login(email, password).then(
+      setEmail(""),
+      setPassword(""),
+      navigate("/")
+    ).catch((e) => {
+      setErrPassword(`Erro ${e.response.data}`);
+    });
+    
   };
 
   const handleClose = () => {

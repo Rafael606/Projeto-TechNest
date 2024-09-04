@@ -18,6 +18,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.User = require('./user')(sequelize, Sequelize);
+db.Endereco = require('./endereco')(sequelize, Sequelize);
 db.Product = require('./product')(sequelize, Sequelize);
 db.Category = require('./category')(sequelize, Sequelize);
 db.Order = require('./order')(sequelize, Sequelize);
@@ -27,6 +28,10 @@ db.ProductCategory = require('./productcategory')(sequelize, Sequelize);
 // Cada usuário pode ter muitos pedidos, e cada pedido pertence a um único usuário.
 db.User.hasMany(db.Order);
 db.Order.belongsTo(db.User);
+
+// Cada usuário pode ter muitos endereços, mas cada endereço pertence a um único usuário.
+db.User.hasMany(db.Endereco);
+db.Endereco.belongsTo(db.User);
 
 //Muitos produtos podem estar em muitos pedidos, e muitos pedidos podem conter muitos produtos.
 //Por isso tem a tabela OrderItem

@@ -10,6 +10,16 @@ const login = async (email, password) => {
   }
 };
 
+const register = async (user) => {
+  try {
+    const response = await api.post('auth/register', user);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao realizar login:', error);
+    throw error;
+  }
+};
+
 const logout = () => {
   localStorage.removeItem('user');
 };
@@ -19,4 +29,4 @@ const getCurrentUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
-export default { login, logout, getCurrentUser };
+export default { login, logout, register, getCurrentUser };

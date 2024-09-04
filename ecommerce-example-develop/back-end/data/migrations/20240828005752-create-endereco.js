@@ -1,36 +1,44 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('Enderecos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nome: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'Users', // Nome da tabela 'Users'
+          key: 'id'
+        },
+        onDelete: 'CASCADE', // Exclui endereços se o usuário for excluído
+        onUpdate: 'CASCADE'
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-      },
-      telefone: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-      },
-      password: {
+      logradouro: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      role: {
+      cidade: {
         type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: 'customer'
+        allowNull: false
+      },
+      uf: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      pais: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      cep: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -40,9 +48,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
+  });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Enderecos');
   }
 };
