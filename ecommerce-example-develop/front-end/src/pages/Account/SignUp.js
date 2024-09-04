@@ -3,6 +3,8 @@ import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const SignUp = () => {
   const [clientName, setClientName] = useState("");
@@ -11,6 +13,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [country, setCountry] = useState("");
   const [zip, setZip] = useState("");
   const [checked, setChecked] = useState(false);
@@ -20,10 +23,14 @@ const SignUp = () => {
   const [errPassword, setErrPassword] = useState("");
   const [errAddress, setErrAddress] = useState("");
   const [errCity, setErrCity] = useState("");
+  const [errState, setErrState] = useState("");
   const [errCountry, setErrCountry] = useState("");
   const [errZip, setErrZip] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const handleClientName = (e) => {
     setClientName(e.target.value);
@@ -55,6 +62,11 @@ const SignUp = () => {
     setErrCity("");
   };
 
+  const handleState = (e) => {
+    setState(e.target.value);
+    setErrState("");
+  };
+
   const handleCountry = (e) => {
     setCountry(e.target.value);
     setErrCountry("");
@@ -67,6 +79,7 @@ const SignUp = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
+    
 
     if (!clientName) {
       setErrClientName("Digite seu nome");
@@ -92,6 +105,10 @@ const SignUp = () => {
       setErrCity("Digite sua cidade");
     }
 
+    if (!state) {
+      setErrState("Digite seu Estado");
+    }
+
     if (!country) {
       setErrCountry("Insira seu país");
     }
@@ -100,7 +117,7 @@ const SignUp = () => {
       setErrZip("Digite seu CEP");
     }
 
-    if (clientName && email && phone && password && address && city && country && zip) {
+    if (clientName && email && phone && password && address && city && state && country && zip) {
       if (!checked) {
         alert("Você deve concordar com os termos e condições.");
         return;
@@ -108,6 +125,9 @@ const SignUp = () => {
       setSuccessMsg(
         `Olá, obrigado por se cadastrar! Estamos processando suas informações e você receberá um e-mail de confirmação em ${email}.`
       );
+      setSnackbarMessage("Cadastro realizado com sucesso!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
       setClientName("");
       setEmail("");
       setPhone("");
@@ -116,8 +136,13 @@ const SignUp = () => {
       setCity("");
       setCountry("");
       setZip("");
+      setState("");
       setChecked(false);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   return (
@@ -205,197 +230,186 @@ const SignUp = () => {
             </Link>
           </div>
         ) : (
-          <form className="w-full max-w-[400px] h-auto flex items-center justify-center bg-white border border-gray-300 p-4 rounded-md">
-            <div className="px-4 py-6 md:px-6 md:py-8 w-full h-full flex flex-col justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-primeColor">
+          <form className="w-full max-w-[600px] h-auto flex flex-col bg-white border border-gray-300 p-4 rounded-md">
+            <div className="px-4 py-6 md:px-6 md:py-8 w-full h-full flex flex-col gap-4">
               <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-2xl md:text-3xl mb-4">
                 Crie sua conta
               </h1>
               <div className="flex flex-col gap-3">
-                {/* Nome */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    Nome
-                  </p>
-                  <input
-                    onChange={handleClientName}
-                    value={clientName}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="text"
-                    placeholder="Seu nome completo"
-                  />
-                  {errClientName && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errClientName}
+                {/* Nome & Email */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Nome
                     </p>
-                  )}
+                    <input
+                      onChange={handleClientName}
+                      value={clientName}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu nome"
+                    />
+                    {errClientName && (
+                      <p className="text-red-500 text-xs mt-1">{errClientName}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      E-mail
+                    </p>
+                    <input
+                      onChange={handleEmail}
+                      value={email}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu e-mail"
+                    />
+                    {errEmail && (
+                      <p className="text-red-500 text-xs mt-1">{errEmail}</p>
+                    )}
+                  </div>
                 </div>
 
-                {/* Email */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    Email
-                  </p>
-                  <input
-                    onChange={handleEmail}
-                    value={email}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="email"
-                    placeholder="john@workemail.com"
-                  />
-                  {errEmail && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errEmail}
+                {/* Telefone & Senha */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Telefone
                     </p>
-                  )}
+                    <input
+                      onChange={handlePhone}
+                      value={phone}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu telefone"
+                    />
+                    {errPhone && (
+                      <p className="text-red-500 text-xs mt-1">{errPhone}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Senha
+                    </p>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        onChange={handlePassword}
+                        value={password}
+                        className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                        placeholder="Digite sua senha"
+                      />
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </span>
+                    </div>
+                    {errPassword && (
+                      <p className="text-red-500 text-xs mt-1">{errPassword}</p>
+                    )}
+                  </div>
                 </div>
 
-                {/* Telefone */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    Telefone
-                  </p>
-                  <input
-                    onChange={handlePhone}
-                    value={phone}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="number"
-                    placeholder="(11) 12345-6789"
-                  />
-                  {errPhone && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errPhone}
+                {/* Endereço & Cidade */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Endereço
                     </p>
-                  )}
+                    <input
+                      onChange={handleAddress}
+                      value={address}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu endereço"
+                    />
+                    {errAddress && (
+                      <p className="text-red-500 text-xs mt-1">{errAddress}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Cidade
+                    </p>
+                    <input
+                      onChange={handleCity}
+                      value={city}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite sua cidade"
+                    />
+                    {errCity && (
+                      <p className="text-red-500 text-xs mt-1">{errCity}</p>
+                    )}
+                  </div>
                 </div>
 
-               {/* Senha */}
-               <div className="flex flex-col gap-1 relative">
-      <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-        Senha
-      </p>
-      <input
-        onChange={handlePassword}
-        value={password}
-        className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border border-gray-400 pr-10"
-        type={showPassword ? "text" : "password"} 
-        placeholder="Digite sua senha"
-      />
-      <span
-        className="absolute top-1/2 right-2 mt-3 transform -translate-y-1/2 cursor-pointer"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? (
-          <FaEye className="text-gray-600" />
-        ) : (
-          <FaEyeSlash className="text-gray-600" />
-        )}
-      </span>
-      {errPassword && (
-        <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-          <span className="font-bold italic mr-1">!</span>
-          {errPassword}
-        </p>
-      )}
-    </div>
-
-                {/* Endereço */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    Endereço
-                  </p>
-                  <input
-                    onChange={handleAddress}
-                    value={address}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="text"
-                    placeholder="Rua Exemplo, 123"
-                  />
-                  {errAddress && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errAddress}
+                {/* Estado & País */}
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      Estado
                     </p>
-                  )}
-                </div>
-
-                {/* Cidade */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    Cidade
-                  </p>
-                  <input
-                    onChange={handleCity}
-                    value={city}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="text"
-                    placeholder="Cidade"
-                  />
-                  {errCity && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errCity}
+                    <input
+                      onChange={handleState}
+                      value={state}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu estado"
+                    />
+                    {errState && (
+                      <p className="text-red-500 text-xs mt-1">{errState}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 w-1/2">
+                    <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                      País
                     </p>
-                  )}
-                </div>
-
-                {/* País */}
-                <div className="flex flex-col gap-1">
-                  <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                    País
-                  </p>
-                  <input
-                    onChange={handleCountry}
-                    value={country}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="text"
-                    placeholder="País"
-                  />
-                  {errCountry && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errCountry}
-                    </p>
-                  )}
+                    <input
+                      onChange={handleCountry}
+                      value={country}
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                      placeholder="Digite seu país"
+                    />
+                    {errCountry && (
+                      <p className="text-red-500 text-xs mt-1">{errCountry}</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* CEP */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 w-full">
                   <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
                     CEP
                   </p>
                   <input
                     onChange={handleZip}
                     value={zip}
-                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
-                    type="number"
-                    placeholder="12345-678"
+                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                    placeholder="Digite seu CEP"
                   />
                   {errZip && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
-                      {errZip}
-                    </p>
+                    <p className="text-red-500 text-xs mt-1">{errZip}</p>
                   )}
                 </div>
 
+                {/* Termos e Condições */}
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
+                    id="terms"
                     checked={checked}
                     onChange={() => setChecked(!checked)}
-                    className="h-5 w-5"
+                    className="w-5 h-5 border border-gray-300 rounded-md cursor-pointer"
                   />
-                  <label className="text-sm md:text-base text-gray-600">
-                    Concordo com os termos e condições
+                  <label
+                    htmlFor="terms"
+                    className="text-sm md:text-base font-medium text-gray-600 cursor-pointer"
+                  >
+                    Eu concordo com os{" "}
+                    <span className="text-primeColor">termos e condições</span>
                   </label>
                 </div>
 
                 <button
                   onClick={handleSignUp}
-                  className="bg-primeColor hover:bg-black text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md duration-300"
+                  className="w-full h-10 bg-primeColor text-gray-200 rounded-md text-base font-titleFont font-semibold tracking-wide hover:bg-black hover:text-white duration-300"
                 >
                   Cadastrar
                 </button>
@@ -412,6 +426,11 @@ const SignUp = () => {
           </form>
         )}
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top' , horizontal: 'right' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { Alert, Snackbar } from "@mui/material";  // Importar componentes do Material UI
 import { logoLight } from "../../assets/images";
 import './SignIn.css';
 
@@ -10,6 +11,7 @@ const SignIn = () => {
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [open, setOpen] = useState(false);  // Estado para controlar a exibição do alerta
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -26,7 +28,7 @@ const SignIn = () => {
 
     let valid = true;
 
-    // Email validation
+    // Validação do email
     if (!email) {
       setErrEmail("Digite seu e-mail");
       valid = false;
@@ -35,7 +37,7 @@ const SignIn = () => {
       valid = false;
     }
 
-    // Password validation
+    // Validação da senha
     if (!password) {
       setErrPassword("Digite sua senha");
       valid = false;
@@ -45,12 +47,15 @@ const SignIn = () => {
     }
 
     if (valid) {
-      setSuccessMsg(
-        `Olá, obrigado pela sua tentativa. Estamos processando para validar seu acesso. Até então, fique conectado e assistência adicional será enviada a você por e-mail em ${email}`
-      );
+      setSuccessMsg("Login efetuado com sucesso!");
+      setOpen(true);  // Mostrar o alerta
       setEmail("");
       setPassword("");
     }
+  };
+
+  const handleClose = () => {
+    setOpen(false);  // Fechar o alerta
   };
 
   return (
@@ -203,6 +208,16 @@ const SignIn = () => {
           </form>
         )}
       </div>
+
+      {/* Alerta de Sucesso */}
+      <Snackbar open={open} 
+      autoHideDuration={6000} 
+      onClose={handleClose}
+      anchorOrigin={{ vertical: 'top' , horizontal: 'right' }}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          {successMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
