@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { paginationItems } from "../../../constants";
 import { BsSuitHeartFill } from "react-icons/bs";
+import categories from '../../../services/categories';
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -26,6 +27,7 @@ const HeaderBottom = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [showSearchBar, setShowSearchBar] = useState(false);
 
   const handleSearch = (e) => {
@@ -38,6 +40,17 @@ const HeaderBottom = () => {
     );
     setFilteredProducts(filtered);
   }, [searchQuery]);
+
+  useEffect(() => {
+    //Busca as categorias do banco de dados
+    categories.findAll().then((response) => {
+      setCategorias(response);
+      console.log("categorias => ", categorias);
+    }).catch((e) => {
+      console.error("Erro ao buscar categorias. Erro: ", e);
+    });
+
+  }, []);
 
   return (
     <div className="w-full relative  bg-gradient-diagonal from-black to-red-500">
@@ -58,27 +71,17 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-36 z-50 bg-primeColor w-auto text-[#767676] h-auto p-4 pb-6"
               >
-                <Link to={"category/imprimante"}>
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Imprimante
-                  </li>
-                </Link>
-
-                <Link to={"category/ancre"}>
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    ancre
-                  </li>
-                </Link>
-                <Link to={"category/Ruban"}>
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    ruban
-                  </li>
-                </Link>
-                <Link to={"category/Bac"}>
-                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                    Bac de dechet
-                  </li>
-                </Link>
+                {
+                  categorias.map((cat, index) => {
+                    return (
+                      <Link to={"category/imprimante"}>
+                        <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
+                          {cat.nome}
+                        </li>
+                      </Link>
+                    )
+                  })
+                }
               </motion.ul>
             )}
           </div>

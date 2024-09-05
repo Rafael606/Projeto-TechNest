@@ -30,11 +30,8 @@ export default function SignInSide() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("cheguei aqui");
         const data = new FormData(event.currentTarget);
-        try {
-            console.log("data", data);
-            
+        try {            
             const res = await auth.login(data.get('email'), data.get('password'));
             localStorage.setItem('user', JSON.stringify(res)); // Armazenamento do token
             navigate('/home'); // Redirecionamento para /home
