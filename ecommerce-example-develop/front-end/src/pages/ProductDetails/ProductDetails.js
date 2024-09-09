@@ -7,17 +7,17 @@ import { FaDownload } from "react-icons/fa";
 const tabs = [
   {
     id: "Fiche Technique",
-    label: "Fiche Technique",
+    label: "Ficha Técnica",
   },
   {
     id: "Description",
-    label: "Description",
+    label: "Descrição",
     content:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis.",
   },
   {
     id: "Video",
-    label: "Video",
+    label: "Vídeo",
     content: (
       <iframe
         width="560"

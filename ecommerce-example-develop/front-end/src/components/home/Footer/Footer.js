@@ -4,7 +4,7 @@ import { FaFacebook, FaYoutube, FaLinkedin, FaGithub } from "react-icons/fa";
 import FooterListTitle from "./FooterListTitle";
 import { paymentCard } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
-import './footer.css'; // Certifique-se de que o caminho está correto
+import './footer.css'; 
 
 const Footer = () => {
   const [emailInfo, setEmailInfo] = useState("");
@@ -145,7 +145,7 @@ const Footer = () => {
                     placeholder="Insira seu email ...*"
                   />
                   {errMsg && (
-                    <p className="text-red-500 text-sm font-semibold font-titleFont text-center animate-bounce mt-2">
+                    <p className="text-white text-sm font-semibold font-titleFont text-center animate-bounce mt-2">
                       {errMsg}
                     </p>
                   )}

@@ -21,8 +21,8 @@ export const orebiSlice = createSlice({
       } else {
         state.products.push(action.payload);
       }
-      // Dispatch a success toast
-      toast.success("Product added to cart");
+      // Exibir uma notificação de sucesso
+      toast.success("Produto adicionado ao carrinho");
     },
     increaseQuantity: (state, action) => {
       const item = state.products.find(
@@ -30,7 +30,7 @@ export const orebiSlice = createSlice({
       );
       if (item) {
         item.quantity++;
-        // Dispatch a success toast
+        // Exibir uma notificação de sucesso
       }
     },
     drecreaseQuantity: (state, action) => {
@@ -41,19 +41,19 @@ export const orebiSlice = createSlice({
         item.quantity = 1;
       } else {
         item.quantity--;
-        // Dispatch a success toast
+        // Exibir uma notificação de sucesso
       }
     },
     deleteItem: (state, action) => {
       state.products = state.products.filter(
         (item) => item._id !== action.payload
       );
-      // Dispatch a success toast
-      toast.error("Product removed from cart");
+      // Exibir uma notificação de erro
+      toast.error("Produto removido do carrinho");
     },
     resetCart: (state) => {
       state.products = [];
-      // Dispatch a success toast
+      // Exibir uma notificação de sucesso
     },
 
     toggleBrand: (state, action) => {

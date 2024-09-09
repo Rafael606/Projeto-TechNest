@@ -2,14 +2,20 @@ import React from "react";
 import Slider from "react-slick";
 import Heading from "../Products/Heading";
 import Product from "../Products/Product";
-import {
-  newArrOne,
-  newArrTwo,
-  newArrThree,
-  newArrFour,
-} from "../../../assets/images/index";
+// import {
+//   newArrOne,
+//   newArrTwo,
+//   newArrThree,
+//   newArrFour,
+// } from "../../../assets/images/index";
 import SampleNextArrow from "./SampleNextArrow";
 import SamplePrevArrow from "./SamplePrevArrow";
+import imgplaca from './placamae1.png';
+import imgteclado from './teclado1.png';
+import imgmonitor from './monitor2.png';
+import imggabinete from './gabinete2.png';
+import imgps5 from './ps5.png';
+
 
 const NewArrivals = () => {
   const settings = {
@@ -53,56 +59,54 @@ const NewArrivals = () => {
         <div className="px-2">
           <Product
             _id="100001"
-            img={newArrOne}
-            productName="Round Table Clock"
-            price="44.00"
-            color="Black"
+            img={imgplaca}
+            productName="Placa Mae Duex DX H310ZG"
+            price="429,00"
             badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
+            des="Placa Mae Duex DX H310ZG, DDR4, Soquet LGA1151, M-ATX, Chipset Intel H310, DX-H310ZG-WTH"
           />
         </div>
         <div className="px-2">
           <Product
             _id="100002"
-            img={newArrTwo}
-            productName="Smart Watch"
+            img={imgteclado}
+            productName= "Teclado Mecanico"
             price="250.00"
-            color="Black"
             badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
+            des="Teclado Mecanico Gamer Motospeed SK84, Switch Azul, Amarelo, KG-SK84-YL-BL-WW"
           />
         </div>
         <div className="px-2">
           <Product
             _id="100003"
-            img={newArrThree}
-            productName="cloth Basket"
+            img={imgmonitor}
+            productName="Monitor Zinnia"
             price="80.00"
             color="Mixed"
             badge={true}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
+            des="Monitor Zinnia Pegasi Pro UW29, 29 Pol, IPS, Ultrawide, WFHD, sRGB 100, 100Hz, FreeSync, HDMI/DP, ZNO-PGSIPRO-BL01"
           />
         </div>
         <div className="px-2">
           <Product
             _id="100004"
-            img={newArrFour}
-            productName="Funny toys for babies"
-            price="60.00"
+            img={imggabinete}
+            productName="PC Gamer Mancer Hermond"
+            price="6.000"
             color="Mixed"
             badge={false}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
+            des="PC Gamer Mancer Hermond, AMD Ryzen 7 5800XT, GeForce RTX 2060 Super 8GB, 16GB DDR4, SSD 480GB"
           />
         </div>
         <div className="px-2">
           <Product
             _id="100005"
-            img={newArrTwo}
-            productName="Funny toys for babies"
-            price="60.00"
-            color="Mixed"
+            img={imgps5}
+            productName="Console Sony Playstation 5"
+            price="3.959"
+            color="Branco"
             badge={false}
-            des="Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic excepturi quibusdam odio deleniti reprehenderit facilis."
+            des="Console Sony Playstation 5, 1 Controle, Branco, PS5, CFI-1214A"
           />
         </div>
       </Slider>

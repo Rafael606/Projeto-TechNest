@@ -42,18 +42,28 @@ const HeaderBottom = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    //Busca as categorias do banco de dados
+    // Busca as categorias do banco de dados
     categories.findAll().then((response) => {
       setCategorias(response);
-      console.log("categorias => ", categorias);
     }).catch((e) => {
       console.error("Erro ao buscar categorias. Erro: ", e);
     });
-
   }, []);
 
+  const renderSubcategories = (parentId) => {
+    return categorias
+      .filter((cat) => cat.parentId === parentId)
+      .map((subcat) => (
+        <Link to={`category/${subcat.nome.toLowerCase().replace(/\s+/g, '-')}`} key={subcat.id}>
+          <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
+            {subcat.nome}
+          </li>
+        </Link>
+      ));
+  };
+
   return (
-    <div className="w-full relative  bg-gradient-diagonal from-black to-red-500">
+    <div className="w-full relative bg-gradient-diagonal from-black to-red-500">
       <div className="max-w-container mx-auto">
         <Flex className="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full px-4 pb-4 lg:pb-0 h-full lg:h-24">
           <div
@@ -71,20 +81,22 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-36 z-50 bg-primeColor w-auto text-[#767676] h-auto p-4 pb-6"
               >
-                {
-                  categorias.map((cat, index) => {
-                    return (
-                      <Link to={"category/imprimante"}>
-                        <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                          {cat.nome}
-                        </li>
-                      </Link>
-                    )
-                  })
-                }
+                {categorias
+                  .filter((cat) => cat.parentId === null)
+                  .map((categoria) => (
+                    <div key={categoria.id}>
+                      <p className="text-white px-4 py-2 font-bold">
+                        {categoria.nome}
+                      </p>
+                      <ul className="pl-6">
+                        {renderSubcategories(categoria.id)}
+                      </ul>
+                    </div>
+                  ))}
               </motion.ul>
             )}
           </div>
+
           <div className="relative w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white flex items-center gap-2 justify-between px-6 rounded-xl">
             <input
               className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
@@ -141,6 +153,7 @@ const HeaderBottom = () => {
               </div>
             )}
           </div>
+
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
             <div onClick={() => setShowUser(!showUser)} className="flex">
               <FaUser />

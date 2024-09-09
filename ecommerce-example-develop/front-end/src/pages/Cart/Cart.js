@@ -93,7 +93,9 @@ const Cart = () => {
               </div>
               <div className="flex justify-end">
                 <Link to="/paymentgateway">
-                  <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
+                  <button 
+                  onClick={() => dispatch(resetCart())}  // Chama a ação resetCart
+                  className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
                     Finalizar Compra
                   </button>
                 </Link>

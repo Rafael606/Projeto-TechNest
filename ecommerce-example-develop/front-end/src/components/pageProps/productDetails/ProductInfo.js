@@ -28,17 +28,13 @@ const ProductInfo = ({ productInfo }) => {
     <div className="flex flex-col gap-5">
       <h2 className="text-4xl font-semibold">{productInfo.productName}</h2>
       <p className="text-2xl font-semibold">
-        {productInfo.price} Dt
-        <span className="text-xl font-semibold line-through ml-2">540</span>
-        <span className="text-xs ml-2 inline-flex items-center px-3 py-1 rounded-full bg-green-600 text-white">
-          Save 100
-        </span>
+        R$ {productInfo.price} 
       </p>
       <hr />
       <p className="text-base text-gray-600">{renderDescription()}</p>
 
       <div className="flex items-center">
-        <p className="text-sm mr-2"> leave a review </p>
+        <p className="text-sm mr-2"> Nota dos compradores </p>
 
         <svg
           className="w-4 h-4 text-yellow-300 ms-1"
@@ -87,10 +83,7 @@ const ProductInfo = ({ productInfo }) => {
         </svg>
       </div>
 
-      <p className="text-base text-green-600 font-medium">En Stock</p>
-      <p className="font-medium text-lg">
-        <span className="font-normal">Colors:</span> {productInfo.color}
-      </p>
+      <p className="text-base text-green-600 font-medium">Em estoque</p>
       <button
         onClick={() =>
           dispatch(
@@ -107,12 +100,8 @@ const ProductInfo = ({ productInfo }) => {
         }
         className="w-full py-4 bg-blue-500 hover:bg-blue-600 duration-300 text-white text-lg font-titleFont"
       >
-        Add to Cart
+        Adicionar ao Carrinho
       </button>
-      <p className="font-normal text-sm">
-        <span className="text-base font-medium"> Categories:</span> Spring
-        collection, Streetwear, Women Tags: featured SKU: N/A
-      </p>
     </div>
   );
 };
