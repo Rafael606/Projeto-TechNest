@@ -41,7 +41,7 @@ const Footer = () => {
             </p>
             <ul className="flex items-center gap-2">
               <a
-                href="https://www.youtube.com/@reactjsBD"
+                // href="https://www.youtube.com/@reactjsBD"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -50,7 +50,7 @@ const Footer = () => {
                 </li>
               </a>
               <a
-                href="https://github.com/noorjsdivs"
+                // href="https://github.com/noorjsdivs"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -59,7 +59,7 @@ const Footer = () => {
                 </li>
               </a>
               <a
-                href="https://www.facebook.com/Noorlalu143/"
+                // href=""
                 target="_blank"
                 rel="noreferrer"
               >
@@ -68,7 +68,7 @@ const Footer = () => {
                 </li>
               </a>
               <a
-                href="https://www.linkedin.com/in/noor-mohammad-ab2245193/"
+                // href=""
                 target="_blank"
                 rel="noreferrer"
               >
@@ -83,17 +83,17 @@ const Footer = () => {
           <FooterListTitle title="Loja" />
           <ul className="flex flex-col gap-2">
             <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Acessórios
+              Perifericos
             </li>
-            <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
+            {/* <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               Roupas
-            </li>
+            </li> */}
             <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               Eletrônicos
             </li>
-            <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
+            {/* <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               Eletrodomésticos
-            </li>
+            </li> */}
             <li className="font-titleFont text-base text-gray-300 hover:text-white hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
               Novidades
             </li>
