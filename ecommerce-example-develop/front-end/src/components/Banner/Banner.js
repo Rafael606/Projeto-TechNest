@@ -8,27 +8,28 @@ import {
 } from "../../assets/images";
 import Image from "../designLayouts/Image";
 
+// Componente para o slide personalizado
 const CustomSlide = ({ Subtext, imgSrc, text, buttonLink, buttonText }) => (
   <div
     style={{
       position: "relative",
-      backgroundColor: "#F5F5F3", // Gray background color
+      backgroundColor: "#F5F5F3", // Cor de fundo cinza
       display: "flex",
       justifyContent: "center",
-      alignItems: "center", // Center vertically
+      alignItems: "center", // Centralizar verticalmente
     }}
   >
     <div
       style={{
-        maxWidth: "450px", // Adjust the maxWidth as needed
-        marginRight: "100px", // Add margin between text/button and image
+        maxWidth: "450px", // Ajustar a largura máxima conforme necessário
+        marginRight: "100px", // Adicionar margem entre texto/botão e imagem
       }}
     >
       <h1
         style={{
           marginBottom: "15px",
-          fontSize: "2.5rem", // Adjust the font size as needed
-          color: "#000", // Black color
+          fontSize: "2.5rem", // Ajustar o tamanho da fonte conforme necessário
+          color: "#000", // Cor preta
           fontWeight: "700",
         }}
       >
@@ -37,8 +38,8 @@ const CustomSlide = ({ Subtext, imgSrc, text, buttonLink, buttonText }) => (
       <p
         style={{
           marginBottom: "25px",
-          fontSize: "1.5rem", // Adjust the font size as needed
-          color: "#666", // Gray color
+          fontSize: "1.5rem", // Ajustar o tamanho da fonte conforme necessário
+          color: "#666", // Cor cinza
         }}
       >
         {Subtext}
@@ -152,30 +153,30 @@ const Banner = () => {
   const slides = [
     {
       imgSrc: bannerImgOne,
-      text: "Enhance Your Printing Experience",
+      text: "Aprimore o seu setup gamer",
       Subtext:
-        "Explore our premium printers and consumables for exceptional results",
-      buttonLink: "/offer",
-      buttonText: "Shop Now",
-    },
-    {
-      imgSrc: bannerImgOne,
-      text: "Quality Printing Solutions",
-      Subtext:
-        "Discover our wide range of printers and consumables designed for professional printing needs.",
+        "Encontre os melhores componentes para turbinar sua experiência tecnológica.",
       buttonLink: "/shop",
-      buttonText: "About-us",
+      buttonText: "Compre agora",
     },
     {
-      imgSrc: bannerImgOne,
-      text: "Efficiency Redefined",
+      imgSrc: bannerImgThree,
+      text: "Home Office",
       Subtext:
-        "Maximize productivity with our advanced printers and high-quality consumables. ",
+        "Encontre os melhores componentes e acessórios para criar um espaço de trabalho eficiente e confortável em casa ou no escritório.",
+      buttonLink: "/shop",
+      buttonText: "Compre agora",
+    },
+    {
+      imgSrc: bannerImgTwo,
+      text: "Precisa de Ajuda?",
+      Subtext:
+        "Entre em contato e resolva suas dúvidas de forma rápida e fácil.",
       buttonLink: "/contact",
-      buttonText: "Contact-us",
+      buttonText: "Contate-nos",
     },
 
-    // Add more slides as needed
+    // Adicione mais slides conforme necessário
   ];
   return (
     <div className="w-full bg-white">

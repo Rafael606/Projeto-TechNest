@@ -77,9 +77,10 @@ const router = createBrowserRouter(
 
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
+      <Route path="/profile" element={<Profile />}></Route>
 
       {/* Rota protegida */}
-      <Route path="/profile" element={<PrivateRoute element={Profile} />} />
+      {/* <Route path="/profile" element={<PrivateRoute element={Profile} />} /> */}
       
     </Route>
   )

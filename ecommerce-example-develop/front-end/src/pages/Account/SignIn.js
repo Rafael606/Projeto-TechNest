@@ -183,8 +183,7 @@ const SignIn = () => {
                     placeholder="exemplo@dominio.com"
                   />
                   {errEmail && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
+                    <p className="text-red-500 text-xs mt-1">
                       {errEmail}
                     </p>
                   )}
@@ -203,8 +202,7 @@ const SignIn = () => {
                     placeholder="Digite sua senha"
                   />
                   {errPassword && (
-                    <p className="text-xs md:text-sm text-red-500 font-titleFont font-semibold px-4">
-                      <span className="font-bold italic mr-1">!</span>
+                    <p className="text-red-500 text-xs mt-1">
                       {errPassword}
                     </p>
                   )}
