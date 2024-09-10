@@ -4,9 +4,10 @@ import { ImList } from "react-icons/im";
 import { GoTriangleDown } from "react-icons/go";
 
 const ProductBanner = ({ itemsPerPageFromBanner }) => {
-  //   const [selected, setSelected] = useState("");
+
   const [girdViewActive, setGridViewActive] = useState(true);
   const [listViewActive, setListViewActive] = useState(false);
+  
   useEffect(() => {
     const gridView = document.querySelector(".gridView");
     const listView = document.querySelector(".listView");

@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { paginationItems } from "../../../constants";
 import { BsSuitHeartFill } from "react-icons/bs";
 import categories from '../../../services/categories';
+import UserFromToken from "../../../utils/UserFromToken";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -15,9 +16,12 @@ const HeaderBottom = () => {
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
   const ref = useRef();
+
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (e && ref.current.contains(e.target)) {
+      const element = e.target;
+
+      if (element !== null && element.contains === 'function') {
         setShow(true);
       } else {
         setShow(false);
@@ -42,6 +46,9 @@ const HeaderBottom = () => {
   }, [searchQuery]);
 
   useEffect(() => {
+    const user = UserFromToken();
+    console.log("user", user);
+
     // Busca as categorias do banco de dados
     categories.findAll().then((response) => {
       setCategorias(response);
@@ -61,6 +68,11 @@ const HeaderBottom = () => {
         </Link>
       ));
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/signin");
+  }
 
   return (
     <div className="w-full relative bg-gradient-diagonal from-black to-red-500">
@@ -178,6 +190,9 @@ const HeaderBottom = () => {
                 </Link>
                 <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                   Meu Perfil
+                </li>
+                <li onClick={handleLogout} className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
+                  Sair
                 </li>
               </motion.ul>
             )}

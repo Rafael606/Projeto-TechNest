@@ -25,8 +25,6 @@ const register = async (req, res) => {
             password: hashedPassword
         }, {transaction: transacaoDB});
 
-        console.log("newUser", newUser);
-
         const newEndereco = await Endereco.create({
             logradouro,
             cidade,
@@ -50,39 +48,39 @@ const login = async (req, res) => {
 
     // Validação de entrada básica para email e senha
     if (!email || !password) {
-        return res.status(400).send('E-mail e senha são obrigatórios.');
+        return res.status(400).json({ message: 'E-mail e senha são obrigatórios.' });
     }
 
-    // if (password.length < 8) {
-    //     return res.status(400).send('Senha deve ter pelo menos 8 caracteres.');
-    // }
-
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-        return res.status(400).send('Formato de e-mail inválido.');
+        return res.status(400).json({ message: 'Formato de e-mail inválido.' });
     }
 
     try {
+
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(400).send('E-mail ou senha inválidos.');
+            return res.status(400).json({ message: 'E-mail ou senha inválidos.' });
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return res.status(400).send('E-mail ou senha inválidos.');
+            return res.status(400).json({ message: 'E-mail ou senha inválidos.' });
         }
 
         // Gera o token apenas com informações essenciais do usuário
         const payload = {
             id: user.id,
+            nome: user.nome,
             email: user.email
         };
+        
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.header('Authorization', token).send({ token });
+        res.header('Authorization', `Bearer ${token}`).json({ token });
+
     } catch (error) {
         console.error(error);
-        res.status(500).send('Erro interno do servidor.');
+        res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 };
 

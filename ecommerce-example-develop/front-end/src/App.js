@@ -6,6 +6,7 @@ import {
   Route,
   ScrollRestoration,
 } from "react-router-dom";
+
 import Footer from "./components/home/Footer/Footer";
 import FooterBottom from "./components/home/Footer/FooterBottom";
 import Header from "./components/home/Header/Header";
@@ -25,6 +26,7 @@ import Shop from "./pages/Shop/Shop";
 import Profile from "./pages/Account/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PrivateRoute from "../src/components/home/PrivateRoute";
 
 const Layout = () => {
   return (
@@ -55,21 +57,30 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<Layout />}>
-        {/* ==================== Header Navlink Start here =================== */}
+        
         <Route index element={<Home />}></Route>
         <Route path="/shop" element={<Shop />}></Route>
         <Route path="/about" element={<About />}></Route>
         <Route path="/contact" element={<Contact />}></Route>
         <Route path="/journal" element={<Journal />}></Route>
-        {/* ==================== Header Navlink End here ===================== */}
+
+        {/* Rotas protegidas */}
+        <Route path="/cart" element={<PrivateRoute element={Cart} />} />
+        <Route path="/paymentgateway" element={<PrivateRoute element={Payment} />} />
+        
+        {/* 
         <Route path="/category/:category" element={<Offer />}></Route>
-        <Route path="/product/:_id" element={<ProductDetails />}></Route>
-        <Route path="/cart" element={<Cart />}></Route>
-        <Route path="/paymentgateway" element={<Payment />}></Route>
+        <Route path="/product/:_id" element={<ProductDetails />}></Route> 
+        */}
+
       </Route>
+
       <Route path="/signup" element={<SignUp />}></Route>
       <Route path="/signin" element={<SignIn />}></Route>
-      <Route path="/profile" element={<Profile />}></Route>
+
+      {/* Rota protegida */}
+      <Route path="/profile" element={<PrivateRoute element={Profile} />} />
+      
     </Route>
   )
 );

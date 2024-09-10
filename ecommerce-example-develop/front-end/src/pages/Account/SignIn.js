@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { Alert, Snackbar } from "@mui/material";  // Importar componentes do Material UI
@@ -27,48 +27,57 @@ const SignIn = () => {
     setErrPassword("");
   };
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
 
-    let valid = true;
+    try {
+      let valid = true;
 
-    // Validação do email
-    if (!email) {
-      setErrEmail("Digite seu e-mail");
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setErrEmail("Endereço de e-mail inválido");
-      valid = false;
+      // Validação do email
+      if (!email) {
+        setErrEmail("Digite seu e-mail");
+        valid = false;
+      } else if (!/\S+@\S+\.\S+/.test(email)) {
+        setErrEmail("Endereço de e-mail inválido");
+        valid = false;
+      }
+
+      // Validação da senha
+      if (!password) {
+        setErrPassword("Digite sua senha");
+        valid = false;
+      } else if (password.length < 3) {
+        setErrPassword("A senha deve ter pelo menos 3 caracteres");
+        valid = false;
+      }
+
+      const response = await auth.login(email, password);
+      
+      const token = response.token;
+
+      if (token){
+        localStorage.setItem("token", token);
+        navigate("/");
+      }else {
+        setErrPassword("Token não encontrado!");
+      }
+
+    } catch (error) {
+      setErrPassword(`Erro ${error}`);
     }
 
-    // Validação da senha
-    if (!password) {
-      setErrPassword("Digite sua senha");
-      valid = false;
-    } else if (password.length < 3) {
-      setErrPassword("A senha deve ter pelo menos 3 caracteres");
-      valid = false;
-    }
-
-    if (valid) {
-      setSuccessMsg("Login efetuado com sucesso!");
-      setOpen(true);  // Mostrar o alerta
-      setEmail("");
-      setPassword("");
-    }
-    auth.login(email, password).then(
-      setEmail(""),
-      setPassword(""),
-      navigate("/")
-    ).catch((e) => {
-      setErrPassword(`Erro ${e.response.data}`);
-    });
-    
   };
 
   const handleClose = () => {
     setOpen(false);  // Fechar o alerta
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/"); // Redireciona para a rota desejada, como a home page
+    }
+  }, [navigate]);
 
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row">
@@ -222,16 +231,17 @@ const SignIn = () => {
       </div>
 
       {/* Alerta de Sucesso */}
-      <Snackbar open={open} 
-      autoHideDuration={6000} 
-      onClose={handleClose}
-      anchorOrigin={{ vertical: 'top' , horizontal: 'right' }}>
+      <Snackbar open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {successMsg}
         </Alert>
       </Snackbar>
     </div>
   );
+
 };
 
 export default SignIn;

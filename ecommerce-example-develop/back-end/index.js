@@ -16,8 +16,8 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 app.use('/enderecos', enderecos);
@@ -26,8 +26,12 @@ app.use('/categories', categoryRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-db.sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+db.sequelize.sync()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Erro ao sincronizar com o banco de dados:', error);
   });
-});
