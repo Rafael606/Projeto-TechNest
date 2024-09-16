@@ -36,8 +36,7 @@ const Footer = () => {
           <FooterListTitle title="Mais sobre a TechNest" />
           <div className="flex flex-col gap-6">
             <p className="text-base w-full xl:w-[80%]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim sint
-              ab ullam, numquam nesciunt in.
+            A TechNest é o seu destino para os melhores produtos de tecnologia e informática. Com uma seleção focada em gamers e entusiastas de hardware, oferecemos componentes de alta performance e acessórios que garantem a melhor experiência.
             </p>
             <ul className="flex items-center gap-2">
               <a
@@ -122,9 +121,6 @@ const Footer = () => {
         <div className="col-span-2 flex flex-col items-center w-full px-4">
           <FooterListTitle title="Inscreva-se na nossa newsletter." />
           <div className="w-full">
-            <p className="text-center mb-4">
-              A at pellentesque et mattis porta enim elementum.
-            </p>
             {subscription ? (
               <motion.p
                 initial={{ x: 20, opacity: 0 }}

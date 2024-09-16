@@ -17,8 +17,7 @@ const YearProduct = () => {
            Produtos do ano
           </h1>
           <p className="text-base font-normal text-primeColor max-w-[600px] mr-4">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat
-            cupiditate modi amet! Facilis, aperiam quaerat.
+          Confira os itens mais inovadores de 2024 em informática, com destaque para placas de vídeo e acessórios. Garanta tecnologia de ponta com as melhores ofertas!
           </p>
           <ShopNow />
         </div>

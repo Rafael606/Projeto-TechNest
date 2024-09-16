@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const enderecos = require('./routes/enderecoesRoutes');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const stripe = require('./routes/stripe');
 
 // Modelos
 const db = require('./data/models');
@@ -23,6 +24,7 @@ app.use('/auth', authRoutes);
 app.use('/enderecos', enderecos);
 app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
+app.use('/stripe', stripe);
 
 const PORT = process.env.PORT || 3000;
 

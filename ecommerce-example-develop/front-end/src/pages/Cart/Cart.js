@@ -6,20 +6,22 @@ import Breadcrumbs from "../../components/pageProps/Breadcrumbs";
 import { resetCart } from "../../redux/orebiSlice";
 import { emptyCart } from "../../assets/images/index";
 import ItemCard from "./ItemCard";
+import PayButton from './PayButton'; 
 
 const Cart = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.orebiReducer.products);
   const [totalAmt, setTotalAmt] = useState("");
   const [shippingCharge, setShippingCharge] = useState("");
+
   useEffect(() => {
     let price = 0;
-    products.map((item) => {
+    products.forEach((item) => {
       price += item.price * item.quantity;
-      return price;
     });
     setTotalAmt(price);
   }, [products]);
+
   useEffect(() => {
     if (totalAmt <= 200) {
       setShippingCharge(30);
@@ -29,6 +31,7 @@ const Cart = () => {
       setShippingCharge(20);
     }
   }, [totalAmt]);
+
   return (
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="Carrinho" />
@@ -93,11 +96,7 @@ const Cart = () => {
               </div>
               <div className="flex justify-end">
                 <Link to="/paymentgateway">
-                  <button 
-                  onClick={() => dispatch(resetCart())}  // Chama a ação resetCart
-                  className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
-                    Finalizar Compra
-                  </button>
+                  <PayButton cartItems={products} />
                 </Link>
               </div>
             </div>
@@ -122,7 +121,7 @@ const Cart = () => {
               Seu Carrinho está vazio.
             </h1>
             <p className="text-sm text-center px-10 -mt-2">
-              Seu carrinho de compras está vazio. Dê-lhe um propósito - preencha-o com livros, eletrônicos, vídeos, etc. e deixe-o feliz.
+              Seu carrinho de compras está vazio. Dê-lhe um propósito - preencha-o com eletrônicos, monitores, fones de ouvido, etc. e deixe-o feliz.
             </p>
             <Link to="/shop">
               <button className="bg-primeColor rounded-md cursor-pointer hover:bg-black active:bg-gray-900 px-8 py-2 font-titleFont font-semibold text-lg text-gray-200 hover:text-white duration-300">

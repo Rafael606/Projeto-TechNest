@@ -5,6 +5,8 @@ import { logoLight } from "../../assets/images";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Alert, Snackbar } from "@mui/material"; 
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 import auth from "../../services/auth";
 
@@ -34,6 +36,20 @@ const SignUp = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const navigate = useNavigate();
+
+  const fetchAddressByZip = async (zipCode) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${zipCode}/json/`);
+      const { logradouro, bairro, localidade, uf } = response.data;
+      setAddress(logradouro);
+      setCity(localidade);
+      setState(uf);
+    } catch (error) {
+      console.error("Erro ao buscar o endereço:", error);
+      setErrZip("Erro ao buscar o endereço. Verifique o CEP.");
+    }
+  };
+  
 
   const handleClientName = (e) => {
     setClientName(e.target.value);
@@ -76,10 +92,25 @@ const SignUp = () => {
   };
 
   const handleZip = (e) => {
-    setZip(e.target.value);
-    setErrZip("");
+    const zipCode = e.target.value;
+  
+    // Limitar a entrada a 8 dígitos
+    if (zipCode.length <= 8) {
+      setZip(zipCode);
+      setErrZip("");
+  
+      // Validar se o CEP tem exatamente 8 dígitos
+      if (zipCode.length === 8) {
+        // Aqui você pode adicionar mais validações se necessário
+        if (/^\d{8}$/.test(zipCode)) {
+          fetchAddressByZip(zipCode);
+        } else {
+          setErrZip("CEP inválido. Deve conter apenas números.");
+        }
+      }
+    }
   };
-
+  
   const handleSignUp = (e) => {
     e.preventDefault();
     

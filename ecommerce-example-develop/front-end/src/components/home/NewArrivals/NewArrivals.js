@@ -61,7 +61,7 @@ const NewArrivals = () => {
             _id="100001"
             img={imgplaca}
             productName="Placa Mae Duex DX H310ZG"
-            price="429,00"
+            price="429.00"
             badge={true}
             des="Placa Mae Duex DX H310ZG, DDR4, Soquet LGA1151, M-ATX, Chipset Intel H310, DX-H310ZG-WTH"
           />

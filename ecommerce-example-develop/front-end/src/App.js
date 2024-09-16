@@ -20,6 +20,7 @@ import Contact from "./pages/Contact/Contact";
 import Home from "./pages/Home/Home";
 import Journal from "./pages/Journal/Journal";
 import Offer from "./pages/Offer/Offer";
+import AdminPage from "./pages/Admin/adminPage"; 
 import Payment from "./pages/payment/Payment";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
 import Shop from "./pages/Shop/Shop";
@@ -27,6 +28,7 @@ import Profile from "./pages/Account/Profile";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "../src/components/home/PrivateRoute";
+import checkoutSuccess from "./pages/Cart/CheckoutSuccess";
 
 const Layout = () => {
   return (
@@ -65,13 +67,19 @@ const router = createBrowserRouter(
         <Route path="/journal" element={<Journal />}></Route>
 
         {/* Rotas protegidas */}
-        <Route path="/cart" element={<PrivateRoute element={Cart} />} />
-        <Route path="/paymentgateway" element={<PrivateRoute element={Payment} />} />
+        {/* <Route path="/cart" element={<PrivateRoute element={Cart} />} />
+        <Route path="/checkout-success" element={<PrivateRoute element={checkoutSuccess} />} />
+        <Route path="/paymentgateway" element={<PrivateRoute element={Payment} />} /> */}
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout-success" element={<checkoutSuccess />} />
+        <Route path="/paymentgateway" element={<Payment />} />
+
+        <Route path="/admin" element={<AdminPage />} /> {/* Rota para a AdminPage */}
         
-        {/* 
+        
         <Route path="/category/:category" element={<Offer />}></Route>
         <Route path="/product/:_id" element={<ProductDetails />}></Route> 
-        */}
+       
 
       </Route>
 

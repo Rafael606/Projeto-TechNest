@@ -84,7 +84,37 @@ const login = async (req, res) => {
     }
 };
 
+const getProfile = async (req, res) => {
+    try {
+        // Obtenha os dados do usuário logado, incluindo o endereço
+        const user = await User.findByPk(req.user.id, {
+            include: [{ model: Endereco, as: 'endereco' }] // Inclui o endereço associado ao usuário
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        res.json({
+            nome: user.nome,
+            email: user.email,
+            telefone: user.telefone,
+            logradouro: user.endereco.logradouro,
+            cidade: user.endereco.cidade,
+            uf: user.endereco.uf,
+            pais: user.endereco.pais,
+            cep: user.endereco.cep,
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar perfil do usuário.' });
+    }
+};
+
 module.exports = {
     register,
-    login
+    login,
+    getProfile
 };
+
