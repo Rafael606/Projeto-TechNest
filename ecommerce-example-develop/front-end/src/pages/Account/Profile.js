@@ -126,17 +126,17 @@ const ProfilePage = () => {
                                     placeholder="Digite seu telefone"
                                 />
                             </div>
-                            <div className="flex flex-col gap-1 w-1/2">
+                            <div className="flex flex-col gap-1 w-full">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    Senha Atual
+                                    Nova Senha
                                 </p>
                                 <div className="relative">
                                     <input
                                         type={showPassword ? "text" : "password"}
-                                        value={currentPassword}
-                                        readOnly // Adiciona o atributo readOnly para impedir a edição
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        value={newPassword}
                                         className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                        placeholder="Sua senha atual"
+                                        placeholder="Digite sua nova senha"
                                     />
                                     <span
                                         onClick={() => setShowPassword(!showPassword)}
@@ -146,30 +146,8 @@ const ProfilePage = () => {
                                     </span>
                                 </div>
                             </div>
-
                         </div>
-
-                        <div className="flex flex-col gap-1 w-full">
-                            <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                Nova Senha
-                            </p>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    value={newPassword}
-                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                    placeholder="Digite sua nova senha"
-                                />
-                                <span
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                >
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
-                            </div>
-                        </div>
-
+                        
                         {/* Endereço & Cidade */}
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">
