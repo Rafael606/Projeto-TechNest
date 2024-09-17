@@ -19,9 +19,7 @@ const HeaderBottom = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      const element = e.target;
-
-      if (element !== null && element.contains === 'function') {
+      if (e && ref.current.contains(e.target)) {
         setShow(true);
       } else {
         setShow(false);
@@ -47,8 +45,6 @@ const HeaderBottom = () => {
 
   useEffect(() => {
     const user = UserFromToken();
-    console.log("user", user);
-
     // Busca as categorias do banco de dados
     categories.findAll().then((response) => {
       setCategorias(response);
@@ -58,15 +54,13 @@ const HeaderBottom = () => {
   }, []);
 
   const renderSubcategories = (parentId) => {
-    return categorias
-      .filter((cat) => cat.parentId === parentId)
-      .map((subcat) => (
-        <Link to={`category/${subcat.nome.toLowerCase().replace(/\s+/g, '-')}`} key={subcat.id}>
-          <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-            {subcat.nome}
-          </li>
-        </Link>
-      ));
+    return categorias.filter((cat) => cat.parentId === parentId).map((subcat) => (
+      <Link to={`category/${subcat.nome.toLowerCase().replace(/\s+/g, '-')}`} key={subcat.id}>
+        <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
+          {subcat.nome}
+        </li>
+      </Link>
+    ));
   };
 
   const handleLogout = () => {
@@ -93,18 +87,16 @@ const HeaderBottom = () => {
                 transition={{ duration: 0.5 }}
                 className="absolute top-36 z-50 bg-primeColor w-auto text-[#767676] h-auto p-4 pb-6"
               >
-                {categorias
-                  .filter((cat) => cat.parentId === null)
-                  .map((categoria) => (
-                    <div key={categoria.id}>
-                      <p className="text-white px-4 py-2 font-bold">
-                        {categoria.nome}
-                      </p>
-                      <ul className="pl-6">
-                        {renderSubcategories(categoria.id)}
-                      </ul>
-                    </div>
-                  ))}
+                {categorias.filter((cat) => cat.parentId === null).map((categoria) => (
+                  <div key={categoria.id}>
+                    <p className="text-white px-4 py-2 font-bold">
+                      {categoria.nome}
+                    </p>
+                    <ul className="pl-6">
+                      {renderSubcategories(categoria.id)}
+                    </ul>
+                  </div>
+                ))}
               </motion.ul>
             )}
           </div>
@@ -189,15 +181,15 @@ const HeaderBottom = () => {
                   </li>
                 </Link>
                 <Link onClick={() => setShowUser(false)} to="/profile">
-                <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
-                  Meu Perfil
-                </li>
+                  <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
+                    Meu Perfil
+                  </li>
                 </Link>
-                
+
                 <li onClick={handleLogout} className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                   Sair
                 </li>
-                
+
               </motion.ul>
             )}
             <Link to="/cart">
