@@ -122,6 +122,17 @@ const getProfile = async (idUser) => {
   }
 }
 
+const updateProfile = async (idUser, user) => {
+  try {
+    const response = await api.put(`auth/profile/${idUser}`, user);
+    console.log("response", response);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao realizar registro:', error); // Corrigido para registro
+    throw error;
+  }
+}
+
 const logout = () => {
   localStorage.removeItem('user');
 };
@@ -145,4 +156,4 @@ const getCurrentUser = () => {
 // export default orebiSlice.reducer;
 
 
-export default { login, logout, register, getCurrentUser, getProfile };
+export default { login, logout, register, getCurrentUser, getProfile, updateProfile};

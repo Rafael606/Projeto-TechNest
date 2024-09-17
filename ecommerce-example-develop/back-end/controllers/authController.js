@@ -121,9 +121,69 @@ const getProfile = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    const transacaoDB = await sequelize.transaction();
+    try {
+        const { idUser } = req.params; // Pega o ID do usuário dos parâmetros
+        const { nome, email, telefone, password } = req.body; // Dados do usuário a serem atualizados
+        const { logradouro, cidade, uf, pais, cep } = req.body; // Dados do endereço a serem atualizados
+
+        // Verifique se o usuário existe
+        const user = await User.findByPk(idUser, {
+            include: [{ model: Endereco, as: 'enderecos' }] // Inclui o endereço associado
+        });
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        // Atualiza os dados do usuário
+        const updatedUser = {
+            nome: nome || user.nome, // Caso o campo não seja passado, mantém o valor anterior
+            email: email || user.email,
+            telefone: telefone || user.telefone,
+        };
+
+        // Se uma nova senha for fornecida, criptografe-a
+        if (password) {
+            updatedUser.password = await bcrypt.hash(password, 10);
+        }
+
+        // Atualiza o usuário
+        await user.update(updatedUser, { transaction: transacaoDB });
+
+        // Verifique se o usuário tem pelo menos um endereço associado
+        if (user.enderecos && user.enderecos.length > 0) {
+            const endereco = user.enderecos[0]; // Pega o primeiro endereço associado
+
+            // Atualiza o endereço
+            const updatedEndereco = {
+                logradouro: logradouro || endereco.logradouro,
+                cidade: cidade || endereco.cidade,
+                uf: uf || endereco.uf,
+                pais: pais || endereco.pais,
+                cep: cep || endereco.cep,
+            };
+
+            await endereco.update(updatedEndereco, { transaction: transacaoDB });
+        }
+
+        // Confirma a transação
+        await transacaoDB.commit();
+
+        res.status(200).json({ message: 'Usuário e endereço atualizados com sucesso.' });
+
+    } catch (error) {
+        // Reverte a transação em caso de erro
+        await transacaoDB.rollback();
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar o usuário e endereço.' });
+    }
+};
+
 module.exports = {
     register,
     login,
-    getProfile
+    getProfile,
+    updateUser
 };
 

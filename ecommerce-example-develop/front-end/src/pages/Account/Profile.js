@@ -46,21 +46,25 @@ const ProfilePage = () => {
     const handleSave = (e) => {
         e.preventDefault(); // Impede o comportamento padrão do formulário
 
+        const user = UserFromToken();
+
         // Lógica para salvar os dados do perfil
         const profileUpdate = {
-            name: clientName,
-            email,
-            phone,
-            address,
-            city,
-            state,
-            country,
-            zip,
-            currentPassword, // Adicione a senha atual
-            newPassword // Adicione a nova senha
+            nome: clientName,
+            email: email,
+            telefone: phone,
+            logradouro: address,
+            cidade: city,
+            uf: state,
+            pais: country,
+            cep: zip
         };
 
-        auth.updateUserProfile(profileUpdate)
+        if (newPassword) {
+            profileUpdate.password = newPassword; // Adiciona a nova senha ao objeto
+        }
+
+        auth.updateProfile(user.id, profileUpdate)
             .then(() => {
                 // Atualiza o estado do Snackbar com uma mensagem de sucesso
                 setSnackbarMessage("Perfil atualizado com sucesso!");
