@@ -3,11 +3,9 @@ import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { logoLight } from "../../assets/images";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Alert, Snackbar } from "@mui/material"; 
+import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-
 import auth from "../../services/auth";
 
 const SignUp = () => {
@@ -49,7 +47,7 @@ const SignUp = () => {
       setErrZip("Erro ao buscar o endereço. Verifique o CEP.");
     }
   };
-  
+
 
   const handleClientName = (e) => {
     setClientName(e.target.value);
@@ -93,12 +91,12 @@ const SignUp = () => {
 
   const handleZip = (e) => {
     const zipCode = e.target.value;
-  
+
     // Limitar a entrada a 8 dígitos
     if (zipCode.length <= 8) {
       setZip(zipCode);
       setErrZip("");
-  
+
       // Validar se o CEP tem exatamente 8 dígitos
       if (zipCode.length === 8) {
         // Aqui você pode adicionar mais validações se necessário
@@ -110,58 +108,27 @@ const SignUp = () => {
       }
     }
   };
-  
-  const handleSignUp = (e) => {
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    
 
-    if (!clientName) {
-      setErrClientName("Digite seu nome");
-    }
+    // Validação local
+    if (!clientName) setErrClientName("Digite seu nome");
+    if (!email) setErrEmail("Digite seu e-mail");
+    if (!phone) setErrPhone("Digite seu número de telefone");
+    if (!password) setErrPassword("Crie uma senha");
+    if (!address) setErrAddress("Digite seu endereço");
+    if (!city) setErrCity("Digite sua cidade");
+    if (!state) setErrState("Digite seu estado");
+    if (!country) setErrCountry("Insira seu país");
+    if (!zip) setErrZip("Digite seu CEP");
 
-    if (!email) {
-      setErrEmail("Digite seu e-mail");
-    }
-
-    if (!phone) {
-      setErrPhone("Digite seu número de telefone");
-    }
-
-    if (!password) {
-      setErrPassword("Criar uma senha");
-    }
-
-    if (!address) {
-      setErrAddress("Digite seu endereço");
-    }
-
-    if (!city) {
-      setErrCity("Digite sua cidade");
-    }
-
-    if (!state) {
-      setErrState("Digite seu Estado");
-    }
-
-    if (!country) {
-      setErrCountry("Insira seu país");
-    }
-
-    if (!zip) {
-      setErrZip("Digite seu CEP");
-    }
-
+    // Verificação final
     if (clientName && email && phone && password && address && city && state && country && zip) {
       if (!checked) {
         alert("Você deve concordar com os termos e condições.");
         return;
       }
-      setSuccessMsg(
-        `Olá, obrigado por se cadastrar! Estamos processando suas informações e você receberá um e-mail de confirmação em ${email}.`
-      );
-      setSnackbarMessage("Cadastro realizado com sucesso!");
-      setSnackbarSeverity("success");
-      setOpenSnackbar(true);
 
       const user = {
         nome: clientName,
@@ -170,33 +137,43 @@ const SignUp = () => {
         password: password,
         logradouro: address,
         cidade: city,
-        uf: state,  // Valor opcional
+        uf: state,
         pais: country,
-        cep: zip  // Valor opcional
+        cep: zip
       };
 
-      auth.register(user)
-        .then(() => {
-          navigate("/signin");  // Navega para a página de signin após registro bem-sucedido
-        })
-        .catch((e) => {
-          // Exibe uma mensagem de erro amigável, incluindo fallback
-          const errorMessage = e.response?.data || 'Ocorreu um erro ao tentar registrar.';
-          setErrPassword(`Erro: ${errorMessage}`);
-        });
+      try {
+        await auth.register(user);
+        setSuccessMsg(
+          `Olá, obrigado por se cadastrar! Um e-mail de confirmação será enviado para ${email}.`
+        );
+        setSnackbarMessage("Cadastro realizado com sucesso!");
+        setSnackbarSeverity("success");
+        setOpenSnackbar(true);
+        navigate("/signin");  // Navega para a página de signin após sucesso
 
-      setClientName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-      setAddress("");
-      setCity("");
-      setCountry("");
-      setZip("");
-      setState("");
-      setChecked(false);
+        // Resetar os campos
+        setClientName("");
+        setEmail("");
+        setPhone("");
+        setPassword("");
+        setAddress("");
+        setCity("");
+        setCountry("");
+        setZip("");
+        setState("");
+        setChecked(false);
+      } catch (e) {
+        // Exibe uma mensagem de erro mais amigável no Snackbar
+        console.log("e", e);
+        const errorMessage = e.response?.data?.message || 'Ocorreu um erro ao tentar registrar.';
+        setSnackbarMessage(errorMessage);
+        setSnackbarSeverity("error");
+        setOpenSnackbar(true);
+      }
     }
   };
+
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
@@ -483,7 +460,7 @@ const SignUp = () => {
           </form>
         )}
       </div>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top' , horizontal: 'right' }}>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
           {snackbarMessage}
         </Alert>

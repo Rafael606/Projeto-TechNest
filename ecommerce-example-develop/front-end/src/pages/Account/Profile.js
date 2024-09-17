@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import auth from "../../services/auth"; // Certifique-se de que o serviço auth esteja configurado
+import UserFromToken from "../../utils/UserFromToken";
 
 const ProfilePage = () => {
     // Estados para armazenar os dados do perfil e para controle do estado do Snackbar
@@ -24,17 +25,18 @@ const ProfilePage = () => {
     const navigate = useNavigate(); // Hook para navegação entre rotas
 
     useEffect(() => {
+        const user = UserFromToken();
         // Carregar dados do usuário ao montar o componente
-        auth.getUserProfile().then(profile => {
+        auth.getProfile(user.id).then(profile => {
             // Atualiza os estados com os dados do perfil
-            setClientName(profile.name);
+            setClientName(profile.nome);
             setEmail(profile.email);
-            setPhone(profile.phone);
-            setAddress(profile.address);
-            setCity(profile.city);
-            setState(profile.state);
-            setCountry(profile.country);
-            setZip(profile.zip);
+            setPhone(profile.telefone);
+            setAddress(profile.logradouro);
+            setCity(profile.cidade);
+            setState(profile.uf);
+            setCountry(profile.pais);
+            setZip(profile.cep);
         }).catch(error => {
             // Lidar com erros de carregamento
             console.error("Erro ao carregar o perfil do usuário:", error);
@@ -44,21 +46,25 @@ const ProfilePage = () => {
     const handleSave = (e) => {
         e.preventDefault(); // Impede o comportamento padrão do formulário
 
+        const user = UserFromToken();
+
         // Lógica para salvar os dados do perfil
         const profileUpdate = {
-            name: clientName,
-            email,
-            phone,
-            address,
-            city,
-            state,
-            country,
-            zip,
-            currentPassword, // Adicione a senha atual
-            newPassword // Adicione a nova senha
+            nome: clientName,
+            email: email,
+            telefone: phone,
+            logradouro: address,
+            cidade: city,
+            uf: state,
+            pais: country,
+            cep: zip
         };
 
-        auth.updateUserProfile(profileUpdate)
+        if (newPassword) {
+            profileUpdate.password = newPassword; // Adiciona a nova senha ao objeto
+        }
+
+        auth.updateProfile(user.id, profileUpdate)
             .then(() => {
                 // Atualiza o estado do Snackbar com uma mensagem de sucesso
                 setSnackbarMessage("Perfil atualizado com sucesso!");
@@ -124,17 +130,17 @@ const ProfilePage = () => {
                                     placeholder="Digite seu telefone"
                                 />
                             </div>
-                            <div className="flex flex-col gap-1 w-1/2">
+                            <div className="flex flex-col gap-1 w-full">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    Senha Atual
+                                    Nova Senha
                                 </p>
                                 <div className="relative">
                                     <input
                                         type={showPassword ? "text" : "password"}
-                                        value={currentPassword}
-                                        readOnly // Adiciona o atributo readOnly para impedir a edição
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        value={newPassword}
                                         className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                        placeholder="Sua senha atual"
+                                        placeholder="Digite sua nova senha"
                                     />
                                     <span
                                         onClick={() => setShowPassword(!showPassword)}
@@ -144,30 +150,8 @@ const ProfilePage = () => {
                                     </span>
                                 </div>
                             </div>
-
                         </div>
-
-                        <div className="flex flex-col gap-1 w-full">
-                            <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                Nova Senha
-                            </p>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    value={newPassword}
-                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                    placeholder="Digite sua nova senha"
-                                />
-                                <span
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                >
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </span>
-                            </div>
-                        </div>
-
+                        
                         {/* Endereço & Cidade */}
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">

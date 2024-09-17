@@ -23,7 +23,7 @@ const register = async (req, res) => {
             email,
             telefone,
             password: hashedPassword
-        }, {transaction: transacaoDB});
+        }, { transaction: transacaoDB });
 
         const newEndereco = await Endereco.create({
             logradouro,
@@ -32,14 +32,14 @@ const register = async (req, res) => {
             pais,
             cep,
             userId: newUser.id
-        }, {transaction: transacaoDB});
+        }, { transaction: transacaoDB });
 
         await transacaoDB.commit();
-        res.status(201).json({newUser, newEndereco});
+        res.status(201).json({ newUser, newEndereco });
 
-    } catch (error){
+    } catch (error) {
         await transacaoDB.rollback();
-        res.status(500).json({ error: `Erro ao cadastrar usuário e endereo. Erro: ${error}`})
+        res.status(500).json({ error: `Erro ao cadastrar usuário e endereo. Erro: ${error}` })
     }
 };
 
@@ -73,7 +73,7 @@ const login = async (req, res) => {
             nome: user.nome,
             email: user.email
         };
-        
+
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.header('Authorization', `Bearer ${token}`).json({ token });
@@ -86,24 +86,33 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
     try {
+        const { idUser } = req.params;
+
         // Obtenha os dados do usuário logado, incluindo o endereço
-        const user = await User.findByPk(req.user.id, {
-            include: [{ model: Endereco, as: 'endereco' }] // Inclui o endereço associado ao usuário
+        const user = await User.findByPk(idUser, {
+            include: [{ model: Endereco, as: 'enderecos' }] // Inclui o endereço associado ao usuário
         });
 
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
+        // Verifique se o usuário tem pelo menos um endereço associado
+        if (!user.enderecos || user.enderecos.length === 0) {
+            return res.status(404).json({ message: 'Endereço não encontrado para o usuário.' });
+        }
+
+        const endereco = user.enderecos[0];
+
         res.json({
             nome: user.nome,
             email: user.email,
             telefone: user.telefone,
-            logradouro: user.endereco.logradouro,
-            cidade: user.endereco.cidade,
-            uf: user.endereco.uf,
-            pais: user.endereco.pais,
-            cep: user.endereco.cep,
+            logradouro: endereco.logradouro,
+            cidade: endereco.cidade,
+            uf: endereco.uf,
+            pais: endereco.pais,
+            cep: endereco.cep,
         });
 
     } catch (error) {
@@ -112,9 +121,69 @@ const getProfile = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    const transacaoDB = await sequelize.transaction();
+    try {
+        const { idUser } = req.params; // Pega o ID do usuário dos parâmetros
+        const { nome, email, telefone, password } = req.body; // Dados do usuário a serem atualizados
+        const { logradouro, cidade, uf, pais, cep } = req.body; // Dados do endereço a serem atualizados
+
+        // Verifique se o usuário existe
+        const user = await User.findByPk(idUser, {
+            include: [{ model: Endereco, as: 'enderecos' }] // Inclui o endereço associado
+        });
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        // Atualiza os dados do usuário
+        const updatedUser = {
+            nome: nome || user.nome, // Caso o campo não seja passado, mantém o valor anterior
+            email: email || user.email,
+            telefone: telefone || user.telefone,
+        };
+
+        // Se uma nova senha for fornecida, criptografe-a
+        if (password) {
+            updatedUser.password = await bcrypt.hash(password, 10);
+        }
+
+        // Atualiza o usuário
+        await user.update(updatedUser, { transaction: transacaoDB });
+
+        // Verifique se o usuário tem pelo menos um endereço associado
+        if (user.enderecos && user.enderecos.length > 0) {
+            const endereco = user.enderecos[0]; // Pega o primeiro endereço associado
+
+            // Atualiza o endereço
+            const updatedEndereco = {
+                logradouro: logradouro || endereco.logradouro,
+                cidade: cidade || endereco.cidade,
+                uf: uf || endereco.uf,
+                pais: pais || endereco.pais,
+                cep: cep || endereco.cep,
+            };
+
+            await endereco.update(updatedEndereco, { transaction: transacaoDB });
+        }
+
+        // Confirma a transação
+        await transacaoDB.commit();
+
+        res.status(200).json({ message: 'Usuário e endereço atualizados com sucesso.' });
+
+    } catch (error) {
+        // Reverte a transação em caso de erro
+        await transacaoDB.rollback();
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar o usuário e endereço.' });
+    }
+};
+
 module.exports = {
     register,
     login,
-    getProfile
+    getProfile,
+    updateUser
 };
 
