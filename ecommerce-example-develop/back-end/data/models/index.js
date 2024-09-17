@@ -30,8 +30,12 @@ db.User.hasMany(db.Order);
 db.Order.belongsTo(db.User);
 
 // Cada usuário pode ter muitos endereços, mas cada endereço pertence a um único usuário.
-db.User.hasMany(db.Endereco);
-db.Endereco.belongsTo(db.User);
+// db.User.hasMany(db.Endereco);
+// db.Endereco.belongsTo(db.User);
+// Associações com alias
+db.User.hasMany(db.Endereco, { as: 'enderecos', foreignKey: 'userId' });
+db.Endereco.belongsTo(db.User, { as: 'usuario', foreignKey: 'userId' });
+
 
 //Muitos produtos podem estar em muitos pedidos, e muitos pedidos podem conter muitos produtos.
 //Por isso tem a tabela OrderItem

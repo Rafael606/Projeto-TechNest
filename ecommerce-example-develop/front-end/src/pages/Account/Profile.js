@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import auth from "../../services/auth"; // Certifique-se de que o serviço auth esteja configurado
+import UserFromToken from "../../utils/UserFromToken";
 
 const ProfilePage = () => {
     // Estados para armazenar os dados do perfil e para controle do estado do Snackbar
@@ -24,17 +25,18 @@ const ProfilePage = () => {
     const navigate = useNavigate(); // Hook para navegação entre rotas
 
     useEffect(() => {
+        const user = UserFromToken();
         // Carregar dados do usuário ao montar o componente
-        auth.getUserProfile().then(profile => {
+        auth.getProfile(user.id).then(profile => {
             // Atualiza os estados com os dados do perfil
-            setClientName(profile.name);
+            setClientName(profile.nome);
             setEmail(profile.email);
-            setPhone(profile.phone);
-            setAddress(profile.address);
-            setCity(profile.city);
-            setState(profile.state);
-            setCountry(profile.country);
-            setZip(profile.zip);
+            setPhone(profile.telefone);
+            setAddress(profile.logradouro);
+            setCity(profile.cidade);
+            setState(profile.uf);
+            setCountry(profile.pais);
+            setZip(profile.cep);
         }).catch(error => {
             // Lidar com erros de carregamento
             console.error("Erro ao carregar o perfil do usuário:", error);

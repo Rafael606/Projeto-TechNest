@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import { paginationItems } from "../../../constants";
 import { BsSuitHeartFill } from "react-icons/bs";
 import categories from '../../../services/categories';
-import UserFromToken from "../../../utils/UserFromToken";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -19,7 +18,7 @@ const HeaderBottom = () => {
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
-      if (e && ref.current.contains(e.target)) {
+      if (ref.current && ref.current.contains(e.target)) {
         setShow(true);
       } else {
         setShow(false);
@@ -44,7 +43,6 @@ const HeaderBottom = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    const user = UserFromToken();
     // Busca as categorias do banco de dados
     categories.findAll().then((response) => {
       setCategorias(response);

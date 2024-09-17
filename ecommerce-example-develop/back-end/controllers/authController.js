@@ -23,7 +23,7 @@ const register = async (req, res) => {
             email,
             telefone,
             password: hashedPassword
-        }, {transaction: transacaoDB});
+        }, { transaction: transacaoDB });
 
         const newEndereco = await Endereco.create({
             logradouro,
@@ -32,14 +32,14 @@ const register = async (req, res) => {
             pais,
             cep,
             userId: newUser.id
-        }, {transaction: transacaoDB});
+        }, { transaction: transacaoDB });
 
         await transacaoDB.commit();
-        res.status(201).json({newUser, newEndereco});
+        res.status(201).json({ newUser, newEndereco });
 
-    } catch (error){
+    } catch (error) {
         await transacaoDB.rollback();
-        res.status(500).json({ error: `Erro ao cadastrar usuário e endereo. Erro: ${error}`})
+        res.status(500).json({ error: `Erro ao cadastrar usuário e endereo. Erro: ${error}` })
     }
 };
 
@@ -73,7 +73,7 @@ const login = async (req, res) => {
             nome: user.nome,
             email: user.email
         };
-        
+
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.header('Authorization', `Bearer ${token}`).json({ token });
@@ -86,24 +86,33 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
     try {
+        const { idUser } = req.params;
+
         // Obtenha os dados do usuário logado, incluindo o endereço
-        const user = await User.findByPk(req.user.id, {
-            include: [{ model: Endereco, as: 'endereco' }] // Inclui o endereço associado ao usuário
+        const user = await User.findByPk(idUser, {
+            include: [{ model: Endereco, as: 'enderecos' }] // Inclui o endereço associado ao usuário
         });
 
         if (!user) {
             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
+        // Verifique se o usuário tem pelo menos um endereço associado
+        if (!user.enderecos || user.enderecos.length === 0) {
+            return res.status(404).json({ message: 'Endereço não encontrado para o usuário.' });
+        }
+
+        const endereco = user.enderecos[0];
+
         res.json({
             nome: user.nome,
             email: user.email,
             telefone: user.telefone,
-            logradouro: user.endereco.logradouro,
-            cidade: user.endereco.cidade,
-            uf: user.endereco.uf,
-            pais: user.endereco.pais,
-            cep: user.endereco.cep,
+            logradouro: endereco.logradouro,
+            cidade: endereco.cidade,
+            uf: endereco.uf,
+            pais: endereco.pais,
+            cep: endereco.cep,
         });
 
     } catch (error) {
