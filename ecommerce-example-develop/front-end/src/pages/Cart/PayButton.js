@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 const PayButton = ({ cartItems }) => {
+
   const handleCheckout = async () => {
     try {
       const { data } = await axios.post('http://localhost:3000/stripe/create-checkout-session', { cartItems });

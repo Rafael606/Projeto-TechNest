@@ -7,12 +7,13 @@ const router = express.Router();
 
 router.post('/create-checkout-session', async (req, res) => {
   try {
+    console.log("requisição",req.body);
     const line_items = req.body.cartItems.map((item) => {
       return {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'algo',
+            name: item.name,
             // images: [item.image],
           },
           unit_amount:  100, // Convertendo para centavos
