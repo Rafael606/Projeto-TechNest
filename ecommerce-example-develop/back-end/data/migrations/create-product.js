@@ -21,6 +21,10 @@ module.exports = {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false
       },
+      img: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
       stock_quantity: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true

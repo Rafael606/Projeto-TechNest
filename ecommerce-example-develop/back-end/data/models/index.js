@@ -30,8 +30,6 @@ db.User.hasMany(db.Order);
 db.Order.belongsTo(db.User);
 
 // Cada usuário pode ter muitos endereços, mas cada endereço pertence a um único usuário.
-// db.User.hasMany(db.Endereco);
-// db.Endereco.belongsTo(db.User);
 // Associações com alias
 db.User.hasMany(db.Endereco, { as: 'enderecos', foreignKey: 'userId' });
 db.Endereco.belongsTo(db.User, { as: 'usuario', foreignKey: 'userId' });
@@ -44,11 +42,28 @@ db.Product.belongsToMany(db.Order, { through: db.OrderItem });
 
 //Muitos produtos podem pertencer a muitas categorias, e muitas categorias podem conter muitos produtos. 
 //Por isso tem a tabela de ProductCategory
-db.Category.belongsToMany(db.Product, { through: db.ProductCategory });
-db.Product.belongsToMany(db.Category, { through: db.ProductCategory });
+db.Category.belongsToMany(db.Product, {
+  through: db.ProductCategory, 
+  as: 'products',         // Alias para a relação, se necessário
+  foreignKey: 'categoryId' // Chave estrangeira na tabela ProductCategory
+});
 
-// Relacionamentos de categorias (categoria pai e subcategorias)
-db.Category.hasMany(db.Category, { as: 'subcategories', foreignKey: 'parentId' });
-db.Category.belongsTo(db.Category, { as: 'parentCategory', foreignKey: 'parentId' });
+db.Product.belongsToMany(db.Category, {
+  through: db.ProductCategory,
+  as: 'categories',        // Alias para a relação, se necessário
+  foreignKey: 'productId'   // Chave estrangeira na tabela ProductCategory
+});
+
+// Relacionamento de categorias (categoria pai e subcategorias)
+db.Category.hasMany(db.Category, {
+  as: 'subcategories',     // Alias para subcategorias
+  foreignKey: 'parentId'   // Chave estrangeira referenciando a categoria pai
+});
+
+db.Category.belongsTo(db.Category, {
+  as: 'parentCategory',    // Alias para categoria pai
+  foreignKey: 'parentId'   // Chave estrangeira referenciando a categoria pai
+});
+
 
 module.exports = db;
