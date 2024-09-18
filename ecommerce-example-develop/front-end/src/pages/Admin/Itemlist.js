@@ -7,11 +7,11 @@ const ItemList = ({ items, onEdit, onRemove }) => {
       <ul className="space-y-4">
         {items.map(item => (
           <li key={item._id} className="flex items-center border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
-            <img src={item.img} alt={item.productName} className="w-24 h-24 object-cover rounded-lg mr-4" />
+            <img src={`http://localhost:3000${item.img}`} alt={item.nome} className="w-24 h-24 object-cover rounded-lg mr-4" />
             <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900">{item.productName}</h3>
-              <p className="text-gray-700">Preço: {item.price}</p>
-              <p className="text-gray-700">Cor: {item.color}</p>
+              <h3 className="text-lg font-medium text-gray-900">{item.description}</h3>
+              <p className="text-gray-700">Preço: {item.unit_price}</p>
+              <p className="text-gray-700">Quantidade em estoque: {item.stock_quantity}</p>
               <div className="mt-2">
                 <button
                   onClick={() => onEdit(item)}

@@ -21,24 +21,12 @@ db.User = require('./user')(sequelize, Sequelize);
 db.Endereco = require('./endereco')(sequelize, Sequelize);
 db.Product = require('./product')(sequelize, Sequelize);
 db.Category = require('./category')(sequelize, Sequelize);
-db.Order = require('./order')(sequelize, Sequelize);
-db.OrderItem = require('./orderitem')(sequelize, Sequelize);
 db.ProductCategory = require('./productcategory')(sequelize, Sequelize);
-
-// Cada usuário pode ter muitos pedidos, e cada pedido pertence a um único usuário.
-db.User.hasMany(db.Order);
-db.Order.belongsTo(db.User);
 
 // Cada usuário pode ter muitos endereços, mas cada endereço pertence a um único usuário.
 // Associações com alias
 db.User.hasMany(db.Endereco, { as: 'enderecos', foreignKey: 'userId' });
 db.Endereco.belongsTo(db.User, { as: 'usuario', foreignKey: 'userId' });
-
-
-//Muitos produtos podem estar em muitos pedidos, e muitos pedidos podem conter muitos produtos.
-//Por isso tem a tabela OrderItem
-db.Order.belongsToMany(db.Product, { through: db.OrderItem });
-db.Product.belongsToMany(db.Order, { through: db.OrderItem });
 
 //Muitos produtos podem pertencer a muitas categorias, e muitas categorias podem conter muitos produtos. 
 //Por isso tem a tabela de ProductCategory
@@ -64,6 +52,5 @@ db.Category.belongsTo(db.Category, {
   as: 'parentCategory',    // Alias para categoria pai
   foreignKey: 'parentId'   // Chave estrangeira referenciando a categoria pai
 });
-
 
 module.exports = db;

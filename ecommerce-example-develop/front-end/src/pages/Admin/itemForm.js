@@ -3,16 +3,15 @@ import categoriesService from '../../services/categories';
 
 const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const [formData, setFormData] = useState({
-    _id: '',
+    id: '',
     img: '',
-    productName: '',
-    price: '',
-    color: '',
+    nome: '',
+    description: '',
+    unit_price: '',
+    stock_quantity: '',
+    categoria: '', // Alterado para string (um único valor)
     badge: false,
     brand: '',
-    des: '',
-    cat: '',
-    pdf: '',
     ficheTech: []
   });
 
@@ -23,7 +22,6 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     const fetchCategories = async () => {
       try {
         const categoriesData = await categoriesService.findAll();
-        console.log("categoriesData", categoriesData);
         setCategories(categoriesData);
       } catch (error) {
         console.error('Erro ao buscar categorias:', error);
@@ -33,19 +31,22 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     fetchCategories();
 
     if (item) {
-      setFormData(item);
+      // Se o item tiver uma categoria, definir a categoria no formData
+      setFormData({
+        ...item,
+        categoria: item.categories.length > 0 ? item.categories[0].id : '' // Pegue o ID da única categoria
+      });
     } else {
       setFormData({
-        _id: '',
+        id: '',
         img: '',
-        productName: '',
-        price: '',
-        color: '',
+        nome: '',
+        description: '',
+        unit_price: '',
+        stock_quantity: '',
+        categoria: '', // Garantir que o campo de categoria inicie vazio
         badge: false,
         brand: '',
-        des: '',
-        cat: '',
-        pdf: '',
         ficheTech: []
       });
     }
@@ -90,7 +91,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
                 type="text"
                 name="_id"
                 id="_id"
-                value={formData._id}
+                value={formData.id}
                 onChange={handleChange}
                 placeholder="ID"
                 required
@@ -99,12 +100,12 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="productName" className="font-medium text-gray-700">Nome do Produto</label>
+              <label htmlFor="nome" className="font-medium text-gray-700">Nome do Produto</label>
               <input
                 type="text"
-                name="productName"
-                id="productName"
-                value={formData.productName}
+                name="nome"
+                id="nome"
+                value={formData.nome}
                 onChange={handleChange}
                 placeholder="Nome do Produto"
                 required
@@ -113,12 +114,12 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="price" className="font-medium text-gray-700">Preço</label>
+              <label htmlFor="unit_price" className="font-medium text-gray-700">Preço</label>
               <input
                 type="text"
-                name="price"
-                id="price"
-                value={formData.price}
+                name="unit_price"
+                id="unit_price"
+                value={formData.unit_price}
                 onChange={handleChange}
                 placeholder="Preço"
                 required
@@ -127,39 +128,25 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="color" className="font-medium text-gray-700">Cor</label>
+              <label htmlFor="stock_quantity" className="font-medium text-gray-700">Quantidade em Estoque</label>
               <input
                 type="text"
-                name="color"
-                id="color"
-                value={formData.color}
+                name="stock_quantity"
+                id="stock_quantity"
+                value={formData.stock_quantity}
                 onChange={handleChange}
-                placeholder="Cor"
+                placeholder="Quantidade em Estoque"
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="brand" className="font-medium text-gray-700">Marca</label>
-              <input
-                type="text"
-                name="brand"
-                id="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                placeholder="Marca"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="des" className="font-medium text-gray-700">Descrição</label>
+              <label htmlFor="description" className="font-medium text-gray-700">Descrição</label>
               <textarea
-                name="des"
-                id="des"
-                value={formData.des}
+                name="description"
+                id="description"
+                value={formData.description}
                 onChange={handleChange}
                 placeholder="Descrição"
                 required
@@ -168,32 +155,23 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="cat" className="font-medium text-gray-700">Categoria</label>
+              <label htmlFor="categoria" className="font-medium text-gray-700">Categoria</label>
               <select
-                name="cat"
-                id="cat"
-                value={formData.cat}
+                name="categoria"
+                id="categoria"
+                value={formData.categoria} // Valor selecionado da categoria única
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Selecione uma categoria</option>
-
-                {/* Exibe categorias somente se tiverem subcategorias */}
-                {categories
-                  .filter(category => category.subcategories && category.subcategories.length > 0) // Filtra categorias com subcategorias
-                  .map(category => (
-                    <optgroup key={category.id} label={category.nome}>
-                      {category.subcategories.map(subCategory => (
-                        <option key={subCategory.id} value={subCategory.nome}>
-                          {subCategory.nome}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.nome}
+                  </option>
+                ))}
               </select>
             </div>
-
 
             <div className="flex flex-col gap-1">
               <label htmlFor="img" className="font-medium text-gray-700">Imagem</label>
@@ -211,21 +189,6 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
               )}
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="pdf" className="font-medium text-gray-700">PDF</label>
-              <input
-                type="file"
-                name="pdf"
-                id="pdf"
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              {formData.pdf && (
-                <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
-                  Arquivo selecionado: {formData.pdf}
-                </p>
-              )}
-            </div>
           </div>
 
           <button
