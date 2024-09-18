@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 import auth from "../../services/auth"; // Certifique-se de que o serviço auth esteja configurado
 import UserFromToken from "../../utils/UserFromToken";
+import axios from 'axios';
 
 const ProfilePage = () => {
     // Estados para armazenar os dados do perfil e para controle do estado do Snackbar
@@ -15,10 +16,8 @@ const ProfilePage = () => {
     const [state, setState] = useState("");
     const [country, setCountry] = useState("");
     const [zip, setZip] = useState("");
-    const [currentPassword, setCurrentPassword] = useState(""); // Senha atual
     const [newPassword, setNewPassword] = useState(""); // Nova senha
     const [showPassword, setShowPassword] = useState(false);
-    const [successMsg, setSuccessMsg] = useState("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -83,10 +82,48 @@ const ProfilePage = () => {
         setOpenSnackbar(false); // Fecha o Snackbar
     };
 
+    const handleZipChange = async (e) => {
+        const newZip = e.target.value;
+        setZip(newZip);
+
+        if (newZip.length === 8) { // Verifica se o CEP tem 8 dígitos
+            try {
+                const response = await axios.get(`https://viacep.com.br/ws/${newZip}/json/`);
+                const data = response.data;
+
+                if (!data.erro) {
+                    setAddress(data.logradouro || "");
+                    setCity(data.localidade || "");
+                    setState(data.uf || "");
+                    setCountry("Brasil"); // Define o país como Brasil
+                } else {
+                    setSnackbarMessage("CEP não encontrado.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                }
+            } catch (error) {
+                setSnackbarMessage("Erro ao buscar o CEP.");
+                setSnackbarSeverity("error");
+                setOpenSnackbar(true);
+            }
+        }
+    };
+
+    // Função para voltar à página principal
+    const handleGoBack = () => {
+        navigate("/"); // Navega para a página principal
+    };
+
     return (
-        <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-red-950 via-red-900 to-white p-6 md:p-10">
+        <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-red-950 via-red-900 to-white p-6 md:p-10 relative">
             <div className="w-full max-w-[600px] h-auto flex flex-col bg-white border border-gray-300 p-4 rounded-md">
-                <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-2xl md:text-3xl mb-4">
+                <button
+                    onClick={() => navigate("/")}
+                    className=" left-4 top-4 text-black hover:text-primeColor "
+                >
+                    &#8592; Voltar
+                </button>
+                <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-2xl md:text-3xl mb-4 text-center">
                     Meu Perfil
                 </h1>
                 <form className="flex flex-col gap-4" onSubmit={handleSave}>
@@ -151,7 +188,7 @@ const ProfilePage = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Endereço & Cidade */}
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">
@@ -210,7 +247,7 @@ const ProfilePage = () => {
                                 CEP
                             </p>
                             <input
-                                onChange={(e) => setZip(e.target.value)}
+                                onChange={handleZipChange}
                                 value={zip}
                                 className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                 placeholder="Digite seu CEP"

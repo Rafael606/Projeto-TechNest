@@ -32,6 +32,11 @@ const Cart = () => {
     }
   }, [totalAmt]);
 
+   // Função para resetar o carrinho após o pagamento
+   const handlePaymentSuccess = () => {
+    dispatch(resetCart()); // Reseta o carrinho
+  };
+
   return (
     <div className="max-w-container mx-auto px-4">
       <Breadcrumbs title="Carrinho" />
@@ -96,7 +101,7 @@ const Cart = () => {
               </div>
               <div className="flex justify-end">
                 <Link to="/paymentgateway">
-                  <PayButton cartItems={products} />
+                  <PayButton cartItems={products} onSuccess={handlePaymentSuccess} />
                 </Link>
               </div>
             </div>

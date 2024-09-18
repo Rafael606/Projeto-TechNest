@@ -11,47 +11,21 @@ import Image from "../designLayouts/Image";
 // Componente para o slide personalizado
 const CustomSlide = ({ Subtext, imgSrc, text, buttonLink, buttonText }) => (
   <div
+    className="bg-[#F5F5F3] flex flex-col md:flex-row justify-center items-center p-8"
     style={{
       position: "relative",
-      backgroundColor: "#F5F5F3", // Cor de fundo cinza
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center", // Centralizar verticalmente
     }}
   >
-    <div
-      style={{
-        maxWidth: "450px", // Ajustar a largura máxima conforme necessário
-        marginRight: "100px", // Adicionar margem entre texto/botão e imagem
-      }}
-    >
-      <h1
-        style={{
-          marginBottom: "15px",
-          fontSize: "2.5rem", // Ajustar o tamanho da fonte conforme necessário
-          color: "#000", // Cor preta
-          fontWeight: "700",
-        }}
-      >
-        {text}
-      </h1>
-      <p
-        style={{
-          marginBottom: "25px",
-          fontSize: "1.5rem", // Ajustar o tamanho da fonte conforme necessário
-          color: "#666", // Cor cinza
-        }}
-      >
-        {Subtext}
-      </p>
-
-      <Link to="/about">
+    <div className="flex flex-col items-center md:items-start max-w-[450px] mb-6 md:mb-0 md:mr-[100px] text-center md:text-left">
+      <h1 className="text-4xl font-bold text-black mb-4">{text}</h1>
+      <p className="text-xl text-gray-600 mb-6">{Subtext}</p>
+      <Link to={buttonLink}>
         <button className="bg-primeColor text-white text-lg font-bodyFont w-[185px] h-[50px] hover:bg-black duration-300 font-bold">
           {buttonText}
         </button>
       </Link>
     </div>
-    <div style={{ marginLeft: "100px" }}>
+    <div className="md:ml-[100px]">
       <Image imgSrc={imgSrc} />
     </div>
   </div>

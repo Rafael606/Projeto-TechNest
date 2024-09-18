@@ -106,6 +106,12 @@ module.exports = {
         parentId: parentCategory2[0].id, // ID da categoria 'Componentes de Hardware'
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        nome: 'Realidade Virtual',
+        parentId: parentCategory2[0].id, // ID da categoria 'Componentes de Hardware'
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },

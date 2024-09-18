@@ -81,7 +81,7 @@ const NewArrivals = () => {
             _id="100003"
             img={imgmonitor}
             productName="Monitor Zinnia"
-            price="80.00"
+            price="380.00"
             color="Mixed"
             badge={true}
             des="Monitor Zinnia Pegasi Pro UW29, 29 Pol, IPS, Ultrawide, WFHD, sRGB 100, 100Hz, FreeSync, HDMI/DP, ZNO-PGSIPRO-BL01"
@@ -92,7 +92,7 @@ const NewArrivals = () => {
             _id="100004"
             img={imggabinete}
             productName="PC Gamer Mancer Hermond"
-            price="6.000"
+            price="6000.00"
             color="Mixed"
             badge={false}
             des="PC Gamer Mancer Hermond, AMD Ryzen 7 5800XT, GeForce RTX 2060 Super 8GB, 16GB DDR4, SSD 480GB"
@@ -103,7 +103,7 @@ const NewArrivals = () => {
             _id="100005"
             img={imgps5}
             productName="Console Sony Playstation 5"
-            price="3.959"
+            price="3959.00"
             color="Branco"
             badge={false}
             des="Console Sony Playstation 5, 1 Controle, Branco, PS5, CFI-1214A"

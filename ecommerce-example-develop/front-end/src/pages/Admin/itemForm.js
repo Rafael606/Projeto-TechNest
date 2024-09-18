@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import categoriesService from '../../services/categories';
 
 const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,21 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     ficheTech: []
   });
 
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
+    // Buscar as categorias do backend quando o componente for montado
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await categoriesService.findAll();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error);
+      }
+    };
+
+    fetchCategories();
+
     if (item) {
       setFormData(item);
     } else {
@@ -70,128 +85,141 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div className="flex flex-col gap-1">
               <label htmlFor="_id" className="font-medium text-gray-700">ID</label>
-              <input 
-                type="text" 
-                name="_id" 
-                id="_id" 
-                value={formData._id} 
-                onChange={handleChange} 
-                placeholder="ID" 
-                required 
+              <input
+                type="text"
+                name="_id"
+                id="_id"
+                value={formData._id}
+                onChange={handleChange}
+                placeholder="ID"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="productName" className="font-medium text-gray-700">Nome do Produto</label>
-              <input 
-                type="text" 
-                name="productName" 
-                id="productName" 
-                value={formData.productName} 
-                onChange={handleChange} 
-                placeholder="Nome do Produto" 
-                required 
+              <input
+                type="text"
+                name="productName"
+                id="productName"
+                value={formData.productName}
+                onChange={handleChange}
+                placeholder="Nome do Produto"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="price" className="font-medium text-gray-700">Preço</label>
-              <input 
-                type="text" 
-                name="price" 
-                id="price" 
-                value={formData.price} 
-                onChange={handleChange} 
-                placeholder="Preço" 
-                required 
+              <input
+                type="text"
+                name="price"
+                id="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Preço"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="color" className="font-medium text-gray-700">Cor</label>
-              <input 
-                type="text" 
-                name="color" 
-                id="color" 
-                value={formData.color} 
-                onChange={handleChange} 
-                placeholder="Cor" 
-                required 
+              <input
+                type="text"
+                name="color"
+                id="color"
+                value={formData.color}
+                onChange={handleChange}
+                placeholder="Cor"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="brand" className="font-medium text-gray-700">Marca</label>
-              <input 
-                type="text" 
-                name="brand" 
-                id="brand" 
-                value={formData.brand} 
-                onChange={handleChange} 
-                placeholder="Marca" 
-                required 
+              <input
+                type="text"
+                name="brand"
+                id="brand"
+                value={formData.brand}
+                onChange={handleChange}
+                placeholder="Marca"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="des" className="font-medium text-gray-700">Descrição</label>
-              <textarea 
-                name="des" 
-                id="des" 
-                value={formData.des} 
-                onChange={handleChange} 
-                placeholder="Descrição" 
-                required 
+              <textarea
+                name="des"
+                id="des"
+                value={formData.des}
+                onChange={handleChange}
+                placeholder="Descrição"
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="cat" className="font-medium text-gray-700">Categoria</label>
-              <input 
-                type="text" 
-                name="cat" 
-                id="cat" 
-                value={formData.cat} 
-                onChange={handleChange} 
-                placeholder="Categoria" 
-                required 
+              <select
+                name="cat"
+                id="cat"
+                value={formData.cat}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              >
+                <option value="">Selecione uma categoria</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.nome}>
+                    {category.nome}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="img" className="font-medium text-gray-700">Imagem</label>
-              <input 
-                type="file" 
-                name="img" 
-                id="img" 
-                onChange={handleChange} 
+              <input
+                type="file"
+                name="img"
+                id="img"
+                onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              {formData.img && <p className="mt-1 text-sm text-gray-500">Arquivo selecionado: {formData.img}</p>}
+              {formData.img && (
+                <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
+                  Arquivo selecionado: {formData.img}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">
               <label htmlFor="pdf" className="font-medium text-gray-700">PDF</label>
-              <input 
-                type="file" 
-                name="pdf" 
-                id="pdf" 
-                onChange={handleChange} 
+              <input
+                type="file"
+                name="pdf"
+                id="pdf"
+                onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              {formData.pdf && <p className="mt-1 text-sm text-gray-500">Arquivo selecionado: {formData.pdf}</p>}
+              {formData.pdf && (
+                <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
+                  Arquivo selecionado: {formData.pdf}
+                </p>
+              )}
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             {item ? 'Editar Item' : 'Adicionar Item'}

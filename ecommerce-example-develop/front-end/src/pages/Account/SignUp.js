@@ -39,9 +39,13 @@ const SignUp = () => {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${zipCode}/json/`);
       const { logradouro, bairro, localidade, uf } = response.data;
+
+      const country = "Brasil";
+
       setAddress(logradouro);
       setCity(localidade);
       setState(uf);
+      setCountry(country);
     } catch (error) {
       console.error("Erro ao buscar o endereço:", error);
       setErrZip("Erro ao buscar o endereço. Verifique o CEP.");
@@ -60,14 +64,48 @@ const SignUp = () => {
   };
 
   const handlePhone = (e) => {
-    setPhone(e.target.value);
-    setErrPhone("");
+    let phoneNumber = e.target.value;
+  
+    // Remove todos os caracteres não numéricos
+    phoneNumber = phoneNumber.replace(/\D/g, '');
+  
+    // Limita o número de dígitos para 9
+    if (phoneNumber.length > 11) {
+      phoneNumber = phoneNumber.slice(0, 11);
+    }
+  
+    setPhone(phoneNumber);
+  
+    // Atualize a validação do telefone se necessário
+    if (phoneNumber.length < 8) {
+      setErrPhone("O telefone deve ter pelo menos 8 dígitos.");
+    } else {
+      setErrPhone("");
+    }
   };
 
   const handlePassword = (e) => {
-    setPassword(e.target.value);
-    setErrPassword("");
+    const password = e.target.value;
+    let error = "";
+  
+    // Define as regras de validação
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+    // Verifica as regras de validação
+    if (password.length < minLength) {
+      error = `A senha deve ter pelo menos ${minLength} caracteres.`;
+    } else if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+      error = "A senha deve conter letras maiúsculas, minúsculas, números e caracteres especiais.";
+    }
+  
+    setPassword(password);
+    setErrPassword(error);
   };
+  
 
   const handleAddress = (e) => {
     setAddress(e.target.value);
@@ -91,6 +129,7 @@ const SignUp = () => {
 
   const handleZip = (e) => {
     const zipCode = e.target.value;
+    
 
     // Limitar a entrada a 8 dígitos
     if (zipCode.length <= 8) {
@@ -415,6 +454,7 @@ const SignUp = () => {
                   <input
                     onChange={handleZip}
                     value={zip}
+                    maxLength="8"
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                     placeholder="Digite seu CEP"
                   />

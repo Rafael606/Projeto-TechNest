@@ -9,16 +9,17 @@ router.post('/create-checkout-session', async (req, res) => {
   try {
     console.log("requisição",req.body);
     const line_items = req.body.cartItems.map((item) => {
+        const imageUrl = `http://localhost:3001/static/media/${item.image}`
       return {
         price_data: {
-          currency: 'BRL',
+          currency: 'usd',
           product_data: {
             name: item.name,
-            // images: [item.image],
+            images: [imageUrl],
           },
-          unit_amount: 100, // Convertendo para centavos
+          unit_amount:  item.price * 100, // Convertendo para centavos
         },
-        quantity: 2, // Usa a quantidade do item no carrinho, padrão para 1
+        quantity: item.quantity, // Usa a quantidade do item no carrinho, padrão para 1
       };
     });
 
