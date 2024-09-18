@@ -1,21 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import categoriesService from '../../services/categories';
+import product from '../../services/product';
+import { Alert, Snackbar } from "@mui/material";
 
 const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const [formData, setFormData] = useState({
     id: '',
-    img: '',
+    img: null, // Inicialmente, img será null, pois é um arquivo
     nome: '',
     description: '',
     unit_price: '',
     stock_quantity: '',
-    categoria: '', // Alterado para string (um único valor)
+    categoria: '', // Categoria será uma string (ID da categoria)
     badge: false,
     brand: '',
     ficheTech: []
   });
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [categories, setCategories] = useState([]);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
+  const saveProduct = async () => {
+    try {
+      const data = new FormData(); // Criar o FormData
+      data.append('nome', formData.nome);
+      data.append('description', formData.description);
+      data.append('unit_price', formData.unit_price);
+      data.append('stock_quantity', formData.stock_quantity);
+
+      // Enviar categoria como um array
+      const selectedCategory = formData.categoria ? [formData.categoria] : [];
+      data.append('categories', JSON.stringify(selectedCategory)); // Enviar como string JSON
+
+      // Apenas adicionar a imagem ao FormData se ela foi selecionada
+      if (formData.img) {
+        data.append('img', formData.img); // Adicionar a imagem ao FormData
+      } else {
+        console.error("Nenhuma imagem foi selecionada");
+      }
+
+      // Exibe os dados do FormData para verificar o conteúdo antes de enviar
+      for (let pair of data.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      // Chamar o serviço de criação do produto com FormData
+      await product.created(data);
+
+      setSnackbarSeverity("success");
+      setSnackbarMessage("Produto cadastrado com sucesso!");
+      setOpenSnackbar(true);
+
+      // Limpar o formulário após o envio
+      setFormData({
+        id: '',
+        img: null,
+        nome: '',
+        description: '',
+        unit_price: '',
+        stock_quantity: '',
+        categoria: '',
+        badge: false,
+        brand: '',
+        ficheTech: []
+      });
+    } catch (error) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Erro ao cadastrar o produto!");
+      setOpenSnackbar(true);
+      console.error("Erro ao cadastrar o produto:", error);
+    }
+  };
 
   useEffect(() => {
     // Buscar as categorias do backend quando o componente for montado
@@ -31,20 +92,20 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     fetchCategories();
 
     if (item) {
-      // Se o item tiver uma categoria, definir a categoria no formData
       setFormData({
         ...item,
-        categoria: item.categories.length > 0 ? item.categories[0].id : '' // Pegue o ID da única categoria
+        categoria: item.categories.length > 0 ? item.categories[0].id : '', // Pegue o ID da única categoria
+        img: null // Reiniciar o campo de imagem ao editar
       });
     } else {
       setFormData({
         id: '',
-        img: '',
+        img: null,
         nome: '',
         description: '',
         unit_price: '',
         stock_quantity: '',
-        categoria: '', // Garantir que o campo de categoria inicie vazio
+        categoria: '',
         badge: false,
         brand: '',
         ficheTech: []
@@ -55,9 +116,10 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === 'file') {
+      // Armazenamos o arquivo diretamente no estado formData
       setFormData({
         ...formData,
-        [name]: files[0] ? files[0].name : '' // Apenas o nome do arquivo
+        [name]: files[0] || null // Armazena o arquivo (ou null se não houver arquivo)
       });
     } else {
       setFormData({
@@ -72,6 +134,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     if (item) {
       onEditItem(formData);
     } else {
+      saveProduct();
       onAddItem(formData);
     }
   };
@@ -83,22 +146,8 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
           {item ? 'Editar Item' : 'Adicionar Item'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="_id" className="font-medium text-gray-700">ID</label>
-              <input
-                type="text"
-                name="_id"
-                id="_id"
-                value={formData.id}
-                onChange={handleChange}
-                placeholder="ID"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
             <div className="flex flex-col gap-1">
               <label htmlFor="nome" className="font-medium text-gray-700">Nome do Produto</label>
               <input
@@ -159,7 +208,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
               <select
                 name="categoria"
                 id="categoria"
-                value={formData.categoria} // Valor selecionado da categoria única
+                value={formData.categoria}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -184,11 +233,10 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
               />
               {formData.img && (
                 <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
-                  Arquivo selecionado: {formData.img}
+                  Arquivo selecionado: {formData.img.name}
                 </p>
               )}
             </div>
-
           </div>
 
           <button
@@ -199,6 +247,11 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
           </button>
         </form>
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

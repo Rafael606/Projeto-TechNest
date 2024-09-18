@@ -1,52 +1,41 @@
 const db = require('../data/models');
 const Product = db.Product;
 const Category = db.Category;
-const upload = require('../config/multerConfig'); // Importa o multerConfig
 
 // Criar um novo produto com upload de imagem
 exports.create = async (req, res) => {
-  upload.single('img')(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ error: err.message });
+  try {
+    const { nome, unit_price, description, stock_quantity } = req.body;
+    let { categories } = req.body;
+
+    // Verifique se "categories" é uma string (provavelmente ao testar via Postman)
+    if (typeof categories === 'string') {
+      categories = JSON.parse(categories); // Converta para array se for uma string
     }
 
-    try {
-      const { nome, unit_price, description, stock_quantity } = req.body;
-      let { categories } = req.body;
+    // Criação do produto
+    const product = await Product.create({
+      nome,
+      unit_price,
+      description,
+      stock_quantity,
+      img: req.file ? `/uploads/${req.file.filename}` : null // Armazenamento da imagem
+    });
 
-      // Verifique se "categories" é uma string (provavelmente ao testar via Postman)
-      if (typeof categories === 'string') {
-        categories = JSON.parse(categories); // Converta para array se for uma string
-      }
-
-      // Criação do produto
-      const product = await Product.create({
-        nome,
-        unit_price,
-        description,
-        stock_quantity,
-        img: req.file ? `/uploads/${req.file.filename}` : null // Armazenamento da imagem
+    // Verifique se "categories" é um array e contém IDs válidos
+    if (categories && Array.isArray(categories) && categories.length > 0) {
+      const existingCategories = await Category.findAll({
+        where: { id: categories }
       });
-
-      // Verifique se "categories" é um array e contém IDs válidos
-      if (categories && Array.isArray(categories) && categories.length > 0) {
-        // Verifique se as categorias existem no banco de dados
-        const existingCategories = await Category.findAll({
-          where: { id: categories }
-        });
-
-        // Associa o produto às categorias existentes
-        if (existingCategories.length > 0) {
-          await product.setCategories(existingCategories.map(cat => cat.id)); // Associa as categorias
-        }
-      }
-
-      res.status(201).json(product);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+      await product.setCategories(existingCategories.map(cat => cat.id));
     }
-  });
+
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
+
 
 // Obter todos os produtos
 exports.findAll = async (req, res) => {
