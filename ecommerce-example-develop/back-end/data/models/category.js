@@ -19,10 +19,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
+  // Definindo associações
   Category.associate = function(models) {
-    Category.hasMany(models.Category, { as: 'subcategories', foreignKey: 'parentId' });
-    Category.belongsTo(models.Category, { as: 'parentCategory', foreignKey: 'parentId' });
-    Category.belongsToMany(models.Product, { through: 'ProductCategory', as: 'products', foreignKey: 'categoryId' });
+    // Relacionamento de muitos para muitos com Product
+    Category.belongsToMany(models.Product, {
+      through: models.ProductCategory, // Especifica o model da tabela intermediária
+      as: 'products',
+      foreignKey: 'categoryId'
+    });
+
+    // Relacionamento hierárquico: uma categoria pode ter subcategorias
+    Category.hasMany(models.Category, {
+      as: 'subcategories', // Alias para subcategorias
+      foreignKey: 'parentId' // Chave estrangeira para a categoria pai
+    });
+
+    // Uma categoria pode pertencer a uma categoria pai
+    Category.belongsTo(models.Category, {
+      as: 'parentCategory', // Alias para categoria pai
+      foreignKey: 'parentId' // Chave estrangeira para a categoria pai
+    });
   };
 
   return Category;

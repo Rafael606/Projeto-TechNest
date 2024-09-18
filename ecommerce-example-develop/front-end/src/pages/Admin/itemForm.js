@@ -1,22 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import categoriesService from '../../services/categories';
+import product from '../../services/product';
+import { Alert, Snackbar } from "@mui/material";
 
 const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const [formData, setFormData] = useState({
-    _id: '',
-    img: '',
-    productName: '',
-    price: '',
-    color: '',
+    id: '',
+    img: null, // Inicialmente, img será null, pois é um arquivo
+    nome: '',
+    description: '',
+    unit_price: '',
+    stock_quantity: '',
+    categoria: '', // Categoria será uma string (ID da categoria)
     badge: false,
     brand: '',
-    des: '',
-    cat: '',
-    pdf: '',
     ficheTech: []
   });
 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [categories, setCategories] = useState([]);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
+  const saveProduct = async () => {
+    try {
+      const data = new FormData(); // Criar o FormData
+      data.append('nome', formData.nome);
+      data.append('description', formData.description);
+      data.append('unit_price', formData.unit_price);
+      data.append('stock_quantity', formData.stock_quantity);
+
+      // Enviar categoria como um array
+      const selectedCategory = formData.categoria ? [formData.categoria] : [];
+      data.append('categories', JSON.stringify(selectedCategory)); // Enviar como string JSON
+
+      // Apenas adicionar a imagem ao FormData se ela foi selecionada
+      if (formData.img) {
+        data.append('img', formData.img); // Adicionar a imagem ao FormData
+      } else {
+        console.error("Nenhuma imagem foi selecionada");
+      }
+
+      // Exibe os dados do FormData para verificar o conteúdo antes de enviar
+      for (let pair of data.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      // Chamar o serviço de criação do produto com FormData
+      await product.created(data);
+
+      setSnackbarSeverity("success");
+      setSnackbarMessage("Produto cadastrado com sucesso!");
+      setOpenSnackbar(true);
+
+      // Limpar o formulário após o envio
+      setFormData({
+        id: '',
+        img: null,
+        nome: '',
+        description: '',
+        unit_price: '',
+        stock_quantity: '',
+        categoria: '',
+        badge: false,
+        brand: '',
+        ficheTech: []
+      });
+    } catch (error) {
+      setSnackbarSeverity("error");
+      setSnackbarMessage("Erro ao cadastrar o produto!");
+      setOpenSnackbar(true);
+      console.error("Erro ao cadastrar o produto:", error);
+    }
+  };
 
   useEffect(() => {
     // Buscar as categorias do backend quando o componente for montado
@@ -32,19 +92,22 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     fetchCategories();
 
     if (item) {
-      setFormData(item);
+      setFormData({
+        ...item,
+        categoria: item.categories.length > 0 ? item.categories[0].id : '', // Pegue o ID da única categoria
+        img: null // Reiniciar o campo de imagem ao editar
+      });
     } else {
       setFormData({
-        _id: '',
-        img: '',
-        productName: '',
-        price: '',
-        color: '',
+        id: '',
+        img: null,
+        nome: '',
+        description: '',
+        unit_price: '',
+        stock_quantity: '',
+        categoria: '',
         badge: false,
         brand: '',
-        des: '',
-        cat: '',
-        pdf: '',
         ficheTech: []
       });
     }
@@ -53,9 +116,10 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === 'file') {
+      // Armazenamos o arquivo diretamente no estado formData
       setFormData({
         ...formData,
-        [name]: files[0] ? files[0].name : '' // Apenas o nome do arquivo
+        [name]: files[0] || null // Armazena o arquivo (ou null se não houver arquivo)
       });
     } else {
       setFormData({
@@ -70,6 +134,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     if (item) {
       onEditItem(formData);
     } else {
+      saveProduct();
       onAddItem(formData);
     }
   };
@@ -81,29 +146,15 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
           {item ? 'Editar Item' : 'Adicionar Item'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} encType="multipart/form-data" className="flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div className="flex flex-col gap-1">
-              <label htmlFor="_id" className="font-medium text-gray-700">ID</label>
+              <label htmlFor="nome" className="font-medium text-gray-700">Nome do Produto</label>
               <input
                 type="text"
-                name="_id"
-                id="_id"
-                value={formData._id}
-                onChange={handleChange}
-                placeholder="ID"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="productName" className="font-medium text-gray-700">Nome do Produto</label>
-              <input
-                type="text"
-                name="productName"
-                id="productName"
-                value={formData.productName}
+                name="nome"
+                id="nome"
+                value={formData.nome}
                 onChange={handleChange}
                 placeholder="Nome do Produto"
                 required
@@ -112,12 +163,12 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="price" className="font-medium text-gray-700">Preço</label>
+              <label htmlFor="unit_price" className="font-medium text-gray-700">Preço</label>
               <input
                 type="text"
-                name="price"
-                id="price"
-                value={formData.price}
+                name="unit_price"
+                id="unit_price"
+                value={formData.unit_price}
                 onChange={handleChange}
                 placeholder="Preço"
                 required
@@ -126,39 +177,25 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="color" className="font-medium text-gray-700">Cor</label>
+              <label htmlFor="stock_quantity" className="font-medium text-gray-700">Quantidade em Estoque</label>
               <input
                 type="text"
-                name="color"
-                id="color"
-                value={formData.color}
+                name="stock_quantity"
+                id="stock_quantity"
+                value={formData.stock_quantity}
                 onChange={handleChange}
-                placeholder="Cor"
+                placeholder="Quantidade em Estoque"
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="brand" className="font-medium text-gray-700">Marca</label>
-              <input
-                type="text"
-                name="brand"
-                id="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                placeholder="Marca"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="des" className="font-medium text-gray-700">Descrição</label>
+              <label htmlFor="description" className="font-medium text-gray-700">Descrição</label>
               <textarea
-                name="des"
-                id="des"
-                value={formData.des}
+                name="description"
+                id="description"
+                value={formData.description}
                 onChange={handleChange}
                 placeholder="Descrição"
                 required
@@ -167,18 +204,18 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="cat" className="font-medium text-gray-700">Categoria</label>
+              <label htmlFor="categoria" className="font-medium text-gray-700">Categoria</label>
               <select
-                name="cat"
-                id="cat"
-                value={formData.cat}
+                name="categoria"
+                id="categoria"
+                value={formData.categoria}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Selecione uma categoria</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.nome}>
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>
                     {category.nome}
                   </option>
                 ))}
@@ -196,23 +233,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
               />
               {formData.img && (
                 <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
-                  Arquivo selecionado: {formData.img}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <label htmlFor="pdf" className="font-medium text-gray-700">PDF</label>
-              <input
-                type="file"
-                name="pdf"
-                id="pdf"
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              {formData.pdf && (
-                <p className="mt-1 text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap">
-                  Arquivo selecionado: {formData.pdf}
+                  Arquivo selecionado: {formData.img.name}
                 </p>
               )}
             </div>
@@ -226,6 +247,11 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
           </button>
         </form>
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

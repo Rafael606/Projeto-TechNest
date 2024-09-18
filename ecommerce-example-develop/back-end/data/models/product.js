@@ -17,10 +17,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
+    img: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     stock_quantity: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true
-    },
+    }
   });
+
+  // Relacionamento de muitos para muitos com Category
+  Product.associate = function(models) {
+    Product.belongsToMany(models.Category, {
+      through: models.ProductCategory, // Especifica o model da tabela intermediária
+      as: 'categories',
+      foreignKey: 'productId'
+    });
+  };
+
   return Product;
 };

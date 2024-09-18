@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { paginationItems as initialItems } from '../../constants/index.js';
 import ItemForm from './itemForm';
 import ItemList from './Itemlist.js';
+import product from "../../services/product";
 
 const AdminPage = () => {
   const [items, setItems] = useState(initialItems);
@@ -19,6 +20,16 @@ const AdminPage = () => {
   const handleRemoveItem = (id) => {
     setItems(items.filter(item => item._id !== id));
   };
+
+  useEffect(() => {
+    // Carregar dados do usuário ao montar o componente
+    product.findAll().then(produtos => {
+      setItems(produtos);
+      console.log(produtos);
+    }).catch(error => {
+      console.error("Erro ao carregar produtos:", error);
+    });
+  }, []);
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
