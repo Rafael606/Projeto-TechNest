@@ -23,6 +23,7 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
     const fetchCategories = async () => {
       try {
         const categoriesData = await categoriesService.findAll();
+        console.log("categoriesData", categoriesData);
         setCategories(categoriesData);
       } catch (error) {
         console.error('Erro ao buscar categorias:', error);
@@ -177,13 +178,22 @@ const ItemForm = ({ onAddItem, onEditItem, item }) => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="">Selecione uma categoria</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.nome}>
-                    {category.nome}
-                  </option>
-                ))}
+
+                {/* Exibe categorias somente se tiverem subcategorias */}
+                {categories
+                  .filter(category => category.subcategories && category.subcategories.length > 0) // Filtra categorias com subcategorias
+                  .map(category => (
+                    <optgroup key={category.id} label={category.nome}>
+                      {category.subcategories.map(subCategory => (
+                        <option key={subCategory.id} value={subCategory.nome}>
+                          {subCategory.nome}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
               </select>
             </div>
+
 
             <div className="flex flex-col gap-1">
               <label htmlFor="img" className="font-medium text-gray-700">Imagem</label>
