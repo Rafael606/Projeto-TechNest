@@ -24,11 +24,11 @@ const Cart = () => {
 
   useEffect(() => {
     if (totalAmt <= 200) {
-      setShippingCharge(30);
+      setShippingCharge(0);
     } else if (totalAmt <= 400) {
-      setShippingCharge(25);
+      setShippingCharge(0);
     } else if (totalAmt > 401) {
-      setShippingCharge(20);
+      setShippingCharge(0);
     }
   }, [totalAmt]);
 
@@ -87,7 +87,7 @@ const Cart = () => {
                   </span>
                 </p>
                 <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
-                  Taxa de Entrega
+                  Frete Grátis
                   <span className="font-semibold tracking-wide font-titleFont">
                     R${shippingCharge}
                   </span>

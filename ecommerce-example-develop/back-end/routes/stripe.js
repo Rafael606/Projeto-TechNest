@@ -9,7 +9,7 @@ router.post('/create-checkout-session', async (req, res) => {
   try {
     console.log("requisição",req.body);
     const line_items = req.body.cartItems.map((item) => {
-        const imageUrl = `http://localhost:3001/static/media/${item.image}`
+        const imageUrl = `http://localhost:3000/http://localhost:3001/cart${item.image}`
       return {
         price_data: {
           currency: 'usd',
