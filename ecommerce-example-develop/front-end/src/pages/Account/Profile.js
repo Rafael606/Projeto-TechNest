@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
-import auth from "../../services/auth"; // Certifique-se de que o serviço auth esteja configurado
+import auth from "../../services/auth";
 import UserFromToken from "../../utils/UserFromToken";
 import axios from 'axios';
 
 const ProfilePage = () => {
-    // Estados para armazenar os dados do perfil e para controle do estado do Snackbar
     const [clientName, setClientName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -16,110 +15,177 @@ const ProfilePage = () => {
     const [state, setState] = useState("");
     const [country, setCountry] = useState("");
     const [zip, setZip] = useState("");
-    const [newPassword, setNewPassword] = useState(""); // Nova senha
+    const [newPassword, setNewPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-    const navigate = useNavigate(); // Hook para navegação entre rotas
+    const [errClientName, setErrClientName] = useState("");
+    const [errEmail, setErrEmail] = useState("");
+    const [errPhone, setErrPhone] = useState("");
+    const [errAddress, setErrAddress] = useState("");
+    const [errCity, setErrCity] = useState("");
+    const [errState, setErrState] = useState("");
+    const [errCountry, setErrCountry] = useState("");
+    const [errZip, setErrZip] = useState("");
+    const [errNewPassword, setErrNewPassword] = useState("");
+
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const user = UserFromToken();
-        // Carregar dados do usuário ao montar o componente
-        auth.getProfile(user.id).then(profile => {
-            // Atualiza os estados com os dados do perfil
-            setClientName(profile.nome);
-            setEmail(profile.email);
-            setPhone(profile.telefone);
-            setAddress(profile.logradouro);
-            setCity(profile.cidade);
-            setState(profile.uf);
-            setCountry(profile.pais);
-            setZip(profile.cep);
-        }).catch(error => {
-            // Lidar com erros de carregamento
-            console.error("Erro ao carregar o perfil do usuário:", error);
-        });
-    }, []); // Dependência vazia, o useEffect será executado apenas uma vez ao montar o componente
+        // Verifica se o usuário está logado e carrega os dados do perfil
+        const userFromToken = UserFromToken();
+        if (userFromToken && userFromToken.id) {
+            setUser(userFromToken);
+            auth.getProfile(userFromToken.id).then(profile => {
+                setClientName(profile.nome);
+                setEmail(profile.email);
+                setPhone(profile.telefone);
+                setAddress(profile.logradouro);
+                setCity(profile.cidade);
+                setState(profile.uf);
+                setCountry(profile.pais);
+                setZip(profile.cep);
+            }).catch(error => {
+                console.error("Erro ao carregar o perfil do usuário:", error);
+            });
+        } else {
+            navigate("/signin"); // Redireciona para a página de login se o usuário não estiver logado
+        }
+    }, [navigate]);
 
     const handleSave = (e) => {
-        e.preventDefault(); // Impede o comportamento padrão do formulário
+        e.preventDefault();
 
-        const user = UserFromToken();
-
-        // Lógica para salvar os dados do perfil
-        const profileUpdate = {
-            nome: clientName,
-            email: email,
-            telefone: phone,
-            logradouro: address,
-            cidade: city,
-            uf: state,
-            pais: country,
-            cep: zip
-        };
-
-        if (newPassword) {
-            profileUpdate.password = newPassword; // Adiciona a nova senha ao objeto
+        if (errClientName || errEmail || errPhone || errAddress || errCity || errState || errCountry || errZip || errNewPassword) {
+            setSnackbarMessage("Por favor, corrija os erros no formulário.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+            return;
         }
 
-        auth.updateProfile(user.id, profileUpdate)
-            .then(() => {
-                // Atualiza o estado do Snackbar com uma mensagem de sucesso
-                setSnackbarMessage("Perfil atualizado com sucesso!");
-                setSnackbarSeverity("success");
-                setOpenSnackbar(true);
-            })
-            .catch(error => {
-                // Atualiza o estado do Snackbar com uma mensagem de erro
-                setSnackbarMessage("Erro ao atualizar o perfil.");
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
-            });
+        if (user && user.id) {
+            const profileUpdate = {
+                nome: clientName,
+                email: email,
+                telefone: phone,
+                logradouro: address,
+                cidade: city,
+                uf: state,
+                pais: country,
+                cep: zip
+            };
+
+            if (newPassword) {
+                profileUpdate.password = newPassword;
+            }
+
+            auth.updateProfile(user.id, profileUpdate)
+                .then(() => {
+                    setSnackbarMessage("Perfil atualizado com sucesso!");
+                    setSnackbarSeverity("success");
+                    setOpenSnackbar(true);
+                })
+                .catch(error => {
+                    setSnackbarMessage("Erro ao atualizar o perfil.");
+                    setSnackbarSeverity("error");
+                    setOpenSnackbar(true);
+                });
+        } else {
+            setSnackbarMessage("Usuário não encontrado.");
+            setSnackbarSeverity("error");
+            setOpenSnackbar(true);
+        }
     };
 
     const handleCloseSnackbar = () => {
-        setOpenSnackbar(false); // Fecha o Snackbar
+        setOpenSnackbar(false);
     };
 
     const handleZipChange = async (e) => {
         const newZip = e.target.value;
         setZip(newZip);
 
-        if (newZip.length === 8) { // Verifica se o CEP tem 8 dígitos
-            try {
-                const response = await axios.get(`https://viacep.com.br/ws/${newZip}/json/`);
-                const data = response.data;
+        if (newZip.length <= 8) {
+            setErrZip("");
 
-                if (!data.erro) {
-                    setAddress(data.logradouro || "");
-                    setCity(data.localidade || "");
-                    setState(data.uf || "");
-                    setCountry("Brasil"); // Define o país como Brasil
+            if (newZip.length === 8) {
+                if (/^\d{8}$/.test(newZip)) {
+                    try {
+                        const response = await axios.get(`https://viacep.com.br/ws/${newZip}/json/`);
+                        const data = response.data;
+
+                        if (!data.erro) {
+                            setAddress(data.logradouro || "");
+                            setCity(data.localidade || "");
+                            setState(data.uf || "");
+                            setCountry("Brasil");
+                        } else {
+                            setErrZip("CEP não encontrado.");
+                            setSnackbarMessage("CEP não encontrado.");
+                            setSnackbarSeverity("error");
+                            setOpenSnackbar(true);
+                        }
+                    } catch (error) {
+                        setErrZip("Erro ao buscar o CEP.");
+                        setSnackbarMessage("Erro ao buscar o CEP.");
+                        setSnackbarSeverity("error");
+                        setOpenSnackbar(true);
+                    }
                 } else {
-                    setSnackbarMessage("CEP não encontrado.");
-                    setSnackbarSeverity("error");
-                    setOpenSnackbar(true);
+                    setErrZip("CEP inválido. Deve conter apenas números.");
                 }
-            } catch (error) {
-                setSnackbarMessage("Erro ao buscar o CEP.");
-                setSnackbarSeverity("error");
-                setOpenSnackbar(true);
             }
+        } else {
+            setErrZip("CEP deve ter no máximo 8 dígitos.");
         }
     };
 
-    // Função para voltar à página principal
+    const handlePhoneChange = (e) => {
+        let phoneNumber = e.target.value;
+        phoneNumber = phoneNumber.replace(/\D/g, '');
+        if (phoneNumber.length > 11) {
+            phoneNumber = phoneNumber.slice(0, 11);
+        }
+        setPhone(phoneNumber);
+        if (phoneNumber.length < 8) {
+            setErrPhone("O telefone deve ter pelo menos 8 dígitos.");
+        } else {
+            setErrPhone("");
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const password = e.target.value;
+        let error = "";
+
+        const minLength = 8;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (password.length < minLength) {
+            error = `A senha deve ter pelo menos ${minLength} caracteres.`;
+        } else if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+            error = "A senha deve conter letras maiúsculas, minúsculas, números e caracteres especiais.";
+        }
+
+        setNewPassword(password);
+        setErrNewPassword(error);
+    };
+
     const handleGoBack = () => {
-        navigate("/"); // Navega para a página principal
+        navigate("/");
     };
 
     return (
         <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-red-950 via-red-900 to-white p-6 md:p-10 relative">
             <div className="w-full max-w-[600px] h-auto flex flex-col bg-white border border-gray-300 p-4 rounded-md">
                 <button
-                    onClick={() => navigate("/")}
-                    className=" left-4 top-4 text-black hover:text-primeColor "
+                    onClick={handleGoBack}
+                    className="left-4 top-4 text-black hover:text-primeColor"
                 >
                     &#8592; Voltar
                 </button>
@@ -128,158 +194,184 @@ const ProfilePage = () => {
                 </h1>
                 <form className="flex flex-col gap-4" onSubmit={handleSave}>
                     <div className="flex flex-col gap-3">
-                        {/* Nome & Email */}
                         <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
                                     Nome
                                 </p>
                                 <input
-                                    onChange={(e) => setClientName(e.target.value)}
+                                    onChange={(e) => {
+                                        setClientName(e.target.value);
+                                        setErrClientName("");
+                                    }}
                                     value={clientName}
                                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                     placeholder="Digite seu nome"
                                 />
+                                {errClientName && <p className="text-red-500 text-xs">{errClientName}</p>}
                             </div>
                             <div className="flex flex-col gap-1 w-1/2">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    E-mail
+                                    Email
                                 </p>
                                 <input
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setErrEmail("");
+                                    }}
                                     value={email}
                                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                     placeholder="Digite seu e-mail"
+                                    type="email"
                                 />
+                                {errEmail && <p className="text-red-500 text-xs">{errEmail}</p>}
                             </div>
                         </div>
 
-                        {/* Telefone & Senha */}
-                        <div className="flex gap-4">
-                            <div className="flex flex-col gap-1 w-1/2">
-                                <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    Telefone
-                                </p>
-                                <input
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    value={phone}
-                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                    placeholder="Digite seu telefone"
-                                />
-                            </div>
-                            <div className="flex flex-col gap-1 w-full">
-                                <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    Nova Senha
-                                </p>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        value={newPassword}
-                                        className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                        placeholder="Digite sua nova senha"
-                                    />
-                                    <span
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                    >
-                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </span>
-                                </div>
-                            </div>
+                        {/* Telefone */}
+                        <div className="flex flex-col gap-1">
+                            <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                                Telefone
+                            </p>
+                            <input
+                                onChange={handlePhoneChange}
+                                value={phone}
+                                className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                                placeholder="Digite seu telefone"
+                                type="tel"
+                            />
+                            {errPhone && <p className="text-red-500 text-xs">{errPhone}</p>}
                         </div>
 
-                        {/* Endereço & Cidade */}
+                        {/* Endereço */}
+                        <div className="flex flex-col gap-1">
+                            <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                                Endereço
+                            </p>
+                            <input
+                                onChange={(e) => {
+                                    setAddress(e.target.value);
+                                    setErrAddress("");
+                                }}
+                                value={address}
+                                className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                                placeholder="Digite seu endereço"
+                            />
+                            {errAddress && <p className="text-red-500 text-xs">{errAddress}</p>}
+                        </div>
+
+                        {/* Cidade, Estado, País e CEP */}
                         <div className="flex gap-4">
-                            <div className="flex flex-col gap-1 w-1/2">
-                                <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                    Endereço
-                                </p>
-                                <input
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    value={address}
-                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                    placeholder="Digite seu endereço"
-                                />
-                            </div>
                             <div className="flex flex-col gap-1 w-1/2">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
                                     Cidade
                                 </p>
                                 <input
-                                    onChange={(e) => setCity(e.target.value)}
+                                    onChange={(e) => {
+                                        setCity(e.target.value);
+                                        setErrCity("");
+                                    }}
                                     value={city}
                                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                     placeholder="Digite sua cidade"
                                 />
+                                {errCity && <p className="text-red-500 text-xs">{errCity}</p>}
                             </div>
-                        </div>
-
-                        {/* Estado & País */}
-                        <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
                                     Estado
                                 </p>
                                 <input
-                                    onChange={(e) => setState(e.target.value)}
+                                    onChange={(e) => {
+                                        setState(e.target.value);
+                                        setErrState("");
+                                    }}
                                     value={state}
                                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                     placeholder="Digite seu estado"
                                 />
+                                {errState && <p className="text-red-500 text-xs">{errState}</p>}
                             </div>
+                        </div>
+
+                        <div className="flex gap-4">
                             <div className="flex flex-col gap-1 w-1/2">
                                 <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
                                     País
                                 </p>
                                 <input
-                                    onChange={(e) => setCountry(e.target.value)}
+                                    onChange={(e) => {
+                                        setCountry(e.target.value);
+                                        setErrCountry("");
+                                    }}
                                     value={country}
                                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
                                     placeholder="Digite seu país"
                                 />
+                                {errCountry && <p className="text-red-500 text-xs">{errCountry}</p>}
+                            </div>
+                            <div className="flex flex-col gap-1 w-1/2">
+                                <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
+                                    CEP
+                                </p>
+                                <input
+                                    onChange={handleZipChange}
+                                    value={zip}
+                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                                    placeholder="Digite seu CEP"
+                                    type="text"
+                                />
+                                {errZip && <p className="text-red-500 text-xs">{errZip}</p>}
                             </div>
                         </div>
 
-                        {/* CEP */}
-                        <div className="flex flex-col gap-1 w-full">
+                        {/* Senha */}
+                        <div className="flex flex-col gap-1">
                             <p className="font-titleFont text-sm md:text-base font-semibold text-gray-600">
-                                CEP
+                                Nova Senha
                             </p>
-                            <input
-                                onChange={handleZipChange}
-                                value={zip}
-                                className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
-                                placeholder="Digite seu CEP"
-                            />
+                            <div className="relative">
+                                <input
+                                    onChange={handlePasswordChange}
+                                    value={newPassword}
+                                    className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-sm md:text-base font-medium placeholder:text-gray-400 border border-gray-300 rounded-md outline-none focus:outline-primeColor"
+                                    placeholder="Digite uma nova senha"
+                                    type={showPassword ? "text" : "password"}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3"
+                                >
+                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                </button>
+                            </div>
+                            {errNewPassword && <p className="text-red-500 text-xs">{errNewPassword}</p>}
                         </div>
                     </div>
 
-                    {/* Botão de Salvar */}
-                    <button
-                        type="submit"
-                        className="w-full h-10 bg-primeColor text-gray-200 rounded-md text-base font-titleFont font-semibold tracking-wide hover:bg-black hover:text-white duration-300"
-                    >
-                        Atualizar Dados
-                    </button>
+                    <div className="flex justify-center mt-4">
+                        <button
+                            type="submit"
+                            className="bg-primeColor text-white px-6 py-2 rounded-md hover:bg-primeColor-dark"
+                        >
+                            Salvar
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            {/* Snackbar para exibir alertas */}
             <Snackbar
                 open={openSnackbar}
-                autoHideDuration={6000} // Duração que o Snackbar ficará visível
+                autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
-                action={
-                    <button onClick={handleCloseSnackbar} className="text-white">X</button>
-                }
             >
                 <Alert
                     onClose={handleCloseSnackbar}
-                    severity={snackbarSeverity} // Tipo de alerta (sucesso ou erro)
+                    severity={snackbarSeverity}
                     sx={{ width: '100%' }}
                 >
-                    {snackbarMessage} {/* Mensagem do alerta */}
+                    {snackbarMessage}
                 </Alert>
             </Snackbar>
         </div>

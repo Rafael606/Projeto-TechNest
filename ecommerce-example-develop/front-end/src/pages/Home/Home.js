@@ -4,7 +4,6 @@ import BannerBottom from "../../components/Banner/BannerBottom";
 import BestSellers from "../../components/home/BestSellers/BestSellers";
 import NewArrivals from "../../components/home/NewArrivals/NewArrivals";
 import Sale from "../../components/home/Sale/Sale";
-import SpecialOffers from "../../components/home/SpecialOffers/SpecialOffers";
 import YearProduct from "../../components/home/YearProduct/YearProduct";
 
 const Home = () => {
@@ -17,7 +16,6 @@ const Home = () => {
         <NewArrivals />
         <BestSellers />
         <YearProduct />
-        <SpecialOffers />
       </div>
     </div>
   );

@@ -10,4 +10,7 @@ const findAll = async () => {
   }
 };
 
-export default { findAll };
+// Atribuir o objeto a uma variável antes de exportar
+const categoriesService = { findAll };
+
+export default categoriesService;

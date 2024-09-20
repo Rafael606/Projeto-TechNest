@@ -3,16 +3,20 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../../redux/orebiSlice";
 
 const ProductInfo = ({ productInfo }) => {
+  // Define o estilo para destacar partes da descrição
   const highlightStyle = {
-    color: "#d0121a", // Change this to the desired color
-    fontWeight: "bold", // Change this to the desired font weight
+    color: "#d0121a", // Cor de destaque
+    fontWeight: "bold", // Peso da fonte em negrito
   };
 
+  // Função para renderizar a descrição do produto
   const renderDescription = () => {
+    // Verifica se a descrição do produto existe
     if (!productInfo.des) {
-      return null; // or handle accordingly if product.des is not defined
+      return null; // Retorna nulo se a descrição não estiver definida
     }
 
+    // Divide a descrição do produto com base em dois pontos e hífen e aplica estilo de destaque alternadamente
     const description = productInfo.des.split(/:(.*?)-/).map((part, index) => {
       return (
         <span key={index} style={index % 2 === 1 ? highlightStyle : {}}>
@@ -21,21 +25,32 @@ const ProductInfo = ({ productInfo }) => {
       );
     });
 
-    return <>{description}</>;
+    return <>{description}</>; // Retorna a descrição renderizada
   };
+
+  // Obtém a função dispatch do Redux para despachar ações
   const dispatch = useDispatch();
+
   return (
     <div className="flex flex-col gap-5">
+      {/* Nome do produto */}
       <h2 className="text-4xl font-semibold">{productInfo.productName}</h2>
+
+      {/* Preço do produto */}
       <p className="text-2xl font-semibold">
-        R$ {productInfo.price} 
+        R$ {productInfo.price}
       </p>
+
       <hr />
+
+      {/* Descrição do produto */}
       <p className="text-base text-gray-600">{renderDescription()}</p>
 
+      {/* Avaliação dos compradores */}
       <div className="flex items-center">
         <p className="text-sm mr-2"> Nota dos compradores </p>
 
+        {/* Ícones de estrela para avaliação */}
         <svg
           className="w-4 h-4 text-yellow-300 ms-1"
           aria-hidden="true"
@@ -83,7 +98,10 @@ const ProductInfo = ({ productInfo }) => {
         </svg>
       </div>
 
+      {/* Indicador de estoque */}
       <p className="text-base text-green-600 font-medium">Em estoque</p>
+
+      {/* Botão para adicionar o produto ao carrinho */}
       <button
         onClick={() =>
           dispatch(

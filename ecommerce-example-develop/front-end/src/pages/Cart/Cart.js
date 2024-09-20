@@ -100,9 +100,7 @@ const Cart = () => {
                 </p>
               </div>
               <div className="flex justify-end">
-                <Link to="/paymentgateway">
                   <PayButton cartItems={products} onSuccess={handlePaymentSuccess} />
-                </Link>
               </div>
             </div>
           </div>

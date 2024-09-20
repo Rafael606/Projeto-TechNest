@@ -17,14 +17,15 @@ const HeaderBottom = () => {
   const ref = useRef();
 
   useEffect(() => {
-    document.body.addEventListener("click", (e) => {
-      if (ref.current && ref.current.contains(e.target)) {
-        setShow(true);
-      } else {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
         setShow(false);
       }
-    });
-  }, [show, ref]);
+    };
+    
+    document.body.addEventListener("click", handleClickOutside);
+    return () => document.body.removeEventListener("click", handleClickOutside);
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -46,13 +47,13 @@ const HeaderBottom = () => {
     categories.findAll().then((response) => {
       setCategorias(response);
     }).catch((e) => {
-      console.error("Erro ao buscar categorias. Erro: ", e);
+      console.error("Erro ao buscar categorias:", e);
     });
   }, []);
 
   const renderSubcategories = (parentId) => {
     return categorias.filter((cat) => cat.parentId === parentId).map((subcat) => (
-      <Link to={`category/${subcat.nome.toLowerCase().replace(/\s+/g, '-')}`} key={subcat.id}>
+      <Link to={`/category/${encodeURIComponent(subcat.nome.toLowerCase().replace(/\s+/g, '-'))}`} key={subcat.id}>
         <li className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
           {subcat.nome}
         </li>
@@ -114,10 +115,10 @@ const HeaderBottom = () => {
                 {filteredProducts.map((item) => (
                   <div
                     onClick={() =>
-                      navigate(`/product/${item.productName.toLowerCase().split(" ").join("")}`, {
+                      navigate(`/product/${encodeURIComponent(item.productName.toLowerCase().split(" ").join(""))}`, {
                         state: { item },
-                      }) &
-                      setShowSearchBar(true) &
+                      }) & 
+                      setShowSearchBar(true) & 
                       setSearchQuery("")
                     }
                     key={item._id}
@@ -130,7 +131,7 @@ const HeaderBottom = () => {
                         {item.des.length > 100 ? `${item.des.slice(0, 100)}...` : item.des}
                       </p>
                       <p className="text-sm">
-                        Price:{" "}
+                        Preço:{" "}
                         <span className="text-primeColor font-semibold">
                           ${item.price}
                         </span>
@@ -144,7 +145,7 @@ const HeaderBottom = () => {
 
           {/* Ícones do usuário, carrinho e coração */}
           <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative justify-end w-full lg:w-auto">
-            <div onClick={() => setShowUser(!showUser)} className="flex">
+            <div onClick={() => setShowUser(!showUser)} className="flex items-center gap-1">
               <FaUser />
               <FaCaretDown />
             </div>
@@ -170,7 +171,6 @@ const HeaderBottom = () => {
                     Meu Perfil
                   </li>
                 </Link>
-
                 <li
                   onClick={handleLogout}
                   className="text-gray-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer"

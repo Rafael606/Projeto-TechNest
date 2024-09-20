@@ -19,15 +19,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// // Conexão com o MySQL
-// const db = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: 'password',
-//   database: 'users_db',
-// });
-
-// Middleware para fazer parse do JSON
 app.use(express.json());
 
 // Rota para upload de imagens
@@ -59,7 +50,3 @@ app.post('/api/user/update/:id', (req, res) => {
   });
 });
 
-// // Inicializa o servidor
-// app.listen(5000, () => {
-//   console.log('Server is running on port 5000');
-// });

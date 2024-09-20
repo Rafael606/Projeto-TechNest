@@ -103,7 +103,7 @@ const login = async (email, password) => {
 
 const register = async (user) => {
   try {
-    const response = await api.post('auth/register', user);
+    const response = await api.post('http://localhost:3000/auth/register', user);
     return response.data;
   } catch (error) {
     console.error('Erro ao realizar registro:', error); // Corrigido para registro

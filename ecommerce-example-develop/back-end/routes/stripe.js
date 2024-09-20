@@ -9,7 +9,7 @@ router.post('/create-checkout-session', async (req, res) => {
   try {
     console.log("requisição",req.body);
     const line_items = req.body.cartItems.map((item) => {
-        const imageUrl = `http://localhost:3000/http://localhost:3001/cart${item.image}`
+        const imageUrl = `http://localhost:3001/cart${item.image}`
       return {
         price_data: {
           currency: 'usd',
@@ -17,7 +17,7 @@ router.post('/create-checkout-session', async (req, res) => {
             name: item.name,
             images: [imageUrl],
           },
-          unit_amount:  item.price * 100, // Convertendo para centavos
+          unit_amount:  Math.round(item.price * 100), // Convertendo para centavos
         },
         quantity: item.quantity, // Usa a quantidade do item no carrinho, padrão para 1
       };
@@ -75,8 +75,8 @@ router.post('/create-checkout-session', async (req, res) => {
       },
       line_items,
       mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/checkout-success`,
-      cancel_url: `${process.env.CLIENT_URL}/paymentgateway`,
+      success_url: `${process.env.CLIENT_URL}/paymentgateway`,
+      cancel_url: `${process.env.CLIENT_URL}/cart`,
     });
 
     res.send({ url: session.url });
