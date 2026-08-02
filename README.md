@@ -1,5 +1,31 @@
 # Projeto TechNest
 
+### Backend
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)
+![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=flat&logo=sequelize&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+![bcryptjs](https://img.shields.io/badge/bcryptjs-338833?style=flat&logo=npm&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat&logo=jsonwebtokens&logoColor=white)
+![Multer](https://img.shields.io/badge/Multer-FF6600?style=flat&logo=npm&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=flat&logo=stripe&logoColor=white)
+![dotenv](https://img.shields.io/badge/dotenv-ECD53F?style=flat&logo=dotenv&logoColor=black)
+![CORS](https://img.shields.io/badge/CORS-005571?style=flat&logo=npm&logoColor=white)
+
+### Frontend
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Create React App](https://img.shields.io/badge/Create_React_App-09D3AC?style=flat&logo=createreactapp&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=reactrouter&logoColor=white)
+![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-764ABC?style=flat&logo=redux&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)
+![Styled Components](https://img.shields.io/badge/Styled_Components-DB7093?style=flat&logo=styledcomponents&logoColor=white)
+![Material UI](https://img.shields.io/badge/Material_UI-007FFF?style=flat&logo=mui&logoColor=white)
+![React Toastify](https://img.shields.io/badge/React_Toastify-FF4154?style=flat&logo=react&logoColor=white)
+![react-paginate](https://img.shields.io/badge/react_paginate-61DAFB?style=flat&logo=react&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat&logo=framer&logoColor=white)
+![Slick Carousel](https://img.shields.io/badge/Slick_Carousel-1D2C4E?style=flat&logo=npm&logoColor=white)
+![Tailwind Scrollbar](https://img.shields.io/badge/Tailwind_Scrollbar-38B2AC?style=flat&logo=tailwindcss&logoColor=white)
+
 Um marketplace / e-commerce fullstack construído com React no frontend e Node.js + Express no backend. O projeto inclui registro/login, perfil de usuário, catálogo de produtos, categorias, cadastro de endereços, upload de imagens de produtos e checkout via Stripe.
 
 ## Estrutura do projeto
